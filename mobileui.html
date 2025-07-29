@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Speed Tracking Trigger with Auto-Reset</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+    .trigger-container {
+      width: 300px;
+    }
+    #speed {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    
+    #fire {
+      font-size: 48px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="trigger-container">
+    <input type="range" id="trigger" min="0" max="100" value="100">
+    <div id="speed">Speed: 0 units/second</div>
+    <div id="fire">🔥</div>
+  </div>
+  <script>
+    const trigger = document.getElementById('trigger');
+    const speedDisplay = document.getElementById('speed');
+
+    let lastTime = Date.now();
+    let lastValue = trigger.value;
+
+    // Speed detection on input
+    trigger.addEventListener('input', () => {
+      const now = Date.now();
+      const currentValue = trigger.value;
+
+      const timeDiff = (now - lastTime) / 1000; // in seconds
+      const valueDiff = Math.abs(currentValue - lastValue);
+
+      const speed = timeDiff > 0 ? (valueDiff / timeDiff).toFixed(2) : 0;
+      speedDisplay.textContent = `Speed: ${speed} units/second`;
+
+      lastTime = now;
+      lastValue = currentValue;
+    });
+    
+        trigger.addEventListener('input', () => {
+      if (parseInt(trigger.value) === parseInt(trigger.min)) {
+        fire.style.display = 'block';
+      } else {
+        fire.style.display = 'none';
+      }
+    });
+
+    // Reset trigger to right on release
+    function resetTrigger() {
+      trigger.value = trigger.max;
+    }
+
+    trigger.addEventListener('mouseup', resetTrigger);   // for mouse
+    trigger.addEventListener('touchend', resetTrigger);  // for mobile
+  </script>
+
+</body>
+</html>
