@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer</title>
+</head>
+<body>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .cross {
+            height: 32px;
+            width: 32px;
+            background-color: #000000;
+            position: fixed;
+            left:50vw;
+            top:50vh;
+            transform: translateY(-50%) translateX(-50%);
+            
+        }
+    </style>
+    <div class = "cross">
+
+    </div>
+    <script>
+        const ws = new WebSocket("wss://" + location.host + "/ws?client=computer");
+        const cross = document.querySelector(".cross");
+        const callibrations = {
+            "center": [],
+            "left": [],
+            "right": []
+        }
+        const medians = {
+            "center": 0,
+            "left": 0,
+            "right": 0
+        }
+        const nextCalibration = ["center", "left", "right"];
+        const positions = {
+            "center": 50,
+            "left": 1,
+            "right": 99
+        }
+        let currentCalibration = nextCalibration[0];
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === "calibration_complete") {
+                cross.style.left = `${positions["center"]}vw`;
+                cross.style.top = `${positions["center"]}vh`;
+
+            } else if (data.type === "update") {
+                let {x, y} = data;
+                cross.style.left = `${x}vw`;
+                cross.style.top = `${y}vh`;
+            } else if (data.type === "request_calibration") {
+                currentCalibration = data.position;
+                cross.style.left = `${positions[currentCalibration]}vw`;
+                cross.style.top = `${positions[currentCalibration]}vh`;
+            }
+
+        };
+        function sendData(data) {
+            ws.send(data);
+        }
+        document.onload = () => {
+            sendData(JSON.stringify({ client: "computer" }));
+        }
+    </script>
+</body>
+</html>
