@@ -62,6 +62,16 @@
                 cross.style.left = `${positions[currentCalibration]}vw`;
                 cross.style.top = `${positions[currentCalibration]}vh`;
             }
+            else if (data.type === "shoot") {
+                const cloned_cross = cross.cloneNode();
+                cloned_cross.style.width = "12px";
+                cloned_cross.style.height = "12px";
+                document.body.appendChild(cloned_cross);
+                cross.style.backgroundColor = "#ff0000";
+                setTimeout(() => {
+                    cross.style.backgroundColor = "#000000";
+                }, 500);
+            }
 
         };
         function sendData(data) {

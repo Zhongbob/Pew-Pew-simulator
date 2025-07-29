@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 import json
 import math
+import asyncio
+from fastapi.websockets import WebSocketDisconnect
 
 app = FastAPI()
 
@@ -13,14 +15,6 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/", response_class=HTMLResponse)
 async def get(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-import uvicorn, asyncio
-
-app = FastAPI()
-templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def get(request: Request):
@@ -132,12 +126,14 @@ async def websocket_endpoint(websocket: WebSocket):
                     diff_x = angle_difference(x, calibrations_final['x']["center"])
                     diff_y = angle_difference(y, calibrations_final['y']["center"])
                     print(f"Diff X: {diff_x}, Diff Y: {diff_y}, X: {x} Y: {y}")
-                    shift_x = (diff_x / calibrations_final['x']["range"]) * 50 + 50
-                    shift_y = (diff_y / calibrations_final['y']["range"]) * 50 + 50
+                    shift_x = -math.copysign(math.fabs(math.tan(diff_x * math.pi / 180) / math.tan(calibrations_final['x']["range"] * math.pi / 180)) , diff_x)* 50 + 50
+                    shift_y = math.copysign(math.fabs(math.tan(diff_y * math.pi / 180) / math.tan(calibrations_final['y']["range"] * math.pi / 180)) , diff_y)* 50 + 50
                     new_position_x = max(min(shift_x, 100), 0)
                     new_position_y = max(min(shift_y, 100), 0)
                     await computer_connections.send_text(json.dumps({"type": "update", "x": new_position_x, "y": new_position_y}))
-
+                if data['type'] == "shoot":
+                    await computer_connections.send_text(json.dumps({"type": "shoot"}))
+                    print("Mobile client shooting")
             else:
                 print("Server client sending data")
     except WebSocketDisconnect:

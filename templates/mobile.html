@@ -66,10 +66,17 @@
             document.getElementById("z-rotation").textContent = event.gamma.toFixed(2);
         }
         const handleOrientationEvent2 = (event) => {
+            const z = event.gamma.toFixed(2);
+            let x = event.alpha.toFixed(2);
+            let y = event.beta.toFixed(2);
+            if (Number(z)>0){
+                x = 180 + Number(x);
+                y = 180 - Number(y);
+            }
             sendData(JSON.stringify({
                 type: "update",
-                x: event.alpha.toFixed(2),
-                y: event.beta.toFixed(2)
+                x: x,
+                y: y
             }));
         }
         const ws = new WebSocket("wss://" + location.host + "/ws?client=mobile");
@@ -94,12 +101,28 @@
         }
         shootButton.onclick = (e) => {
             e.preventDefault();
-            sendData(JSON.stringify({
+            const z = Number(document.getElementById("z-rotation").textContent.trim());
+            let x = Number(document.getElementById("x-rotation").textContent.trim());
+            let y = Number(document.getElementById("y-rotation").textContent.trim());   
+            if (Number(z)>0){
+                x = 180 + Number(x);
+                y = 180 - Number(y);
+            }
+            if (!startShooting) {
+                sendData(JSON.stringify({
                 type: "calibration",
                 position: currentCalibration,
-                x:document.getElementById("x-rotation").textContent.trim(),
-                y:document.getElementById("y-rotation").textContent.trim()
+                x:x,
+                y:y
             }));
+            } else {
+                sendData(JSON.stringify({
+                    type: "shoot",
+                    x: x,
+                    y: y
+                }));
+            }
+            
         }
     </script>
 </body>
