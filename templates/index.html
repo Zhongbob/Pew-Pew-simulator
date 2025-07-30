@@ -13,23 +13,46 @@
             margin: 0;
             padding: 20px;
         }
-        .cross {
+        .player1 {
+            color:blue;
+            
+        }
+        .player2 {
+            color:red;
+            transform: translate(-50%, -50%) rotate(45deg) !important;
+        }
+        .player {
+            display: none;
             height: 32px;
             width: 32px;
-            background-color: #000000;
             position: fixed;
             left:50vw;
             top:50vh;
-            transform: translateY(-50%) translateX(-50%);
-            
+            font-size: 32px;
+            font-weight: bold;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transform: translate(-50%, -50%);
         }
     </style>
-    <div class = "cross">
-
+    <div class = "player1 player">
+        +
+    </div>
+    <div class = "player2 player">
+        +
     </div>
     <script>
         const ws = new WebSocket("wss://" + location.host + "/ws?client=computer");
-        const cross = document.querySelector(".cross");
+        const player1 = document.querySelector(".player1");
+        const player2 = document.querySelector(".player2");
+        const playerIds = {
+            
+        }
+        const playerElements = {
+            1: player1,
+            2: player2
+        }
         const callibrations = {
             "center": [],
             "left": [],
@@ -46,31 +69,55 @@
             "left": 1,
             "right": 99
         }
-        let currentCalibration = nextCalibration[0];
+        let currentCalibrations = {
+            1: nextCalibration[0],
+            2: nextCalibration[0]
+        };
+        const playerColors = {
+            1: "blue",
+            2: "red"
+        };
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
+            const playerId = data.player_id;
+            const playerNumber = playerIds[playerId];
             if (data.type === "calibration_complete") {
-                cross.style.left = `${positions["center"]}vw`;
-                cross.style.top = `${positions["center"]}vh`;
+                const currentElem = playerElements[playerNumber];
+                currentElem.style.left = `${positions["center"]}vw`;
+                currentElem.style.top = `${positions["center"]}vh`;
 
             } else if (data.type === "update") {
                 let {x, y} = data;
-                cross.style.left = `${x}vw`;
-                cross.style.top = `${y}vh`;
+                const currentElement = playerElements[playerNumber];
+                if (currentElement) {
+                    currentElement.style.left = `${x}vw`;
+                    currentElement.style.top = `${y}vh`;
+                }
             } else if (data.type === "request_calibration") {
-                currentCalibration = data.position;
-                cross.style.left = `${positions[currentCalibration]}vw`;
-                cross.style.top = `${positions[currentCalibration]}vh`;
+                currentCalibrations[playerId] = data.position;
+                const currentElement = playerElements[playerNumber];
+                currentElement.style.left = `${positions[data.position]}vw`;
+                currentElement.style.top = `${positions[data.position]}vh`;
             }
             else if (data.type === "fire") {
-                const cloned_cross = cross.cloneNode();
+                const currentPlayer = playerElements[playerNumber];
+                const cloned_cross = currentPlayer.cloneNode();
                 cloned_cross.style.width = "12px";
                 cloned_cross.style.height = "12px";
+                cloned_cross.style.color = "#ff0000";
                 document.body.appendChild(cloned_cross);
-                cross.style.backgroundColor = "#ff0000";
+                const prevColor = playerColors[playerNumber];
+                currentPlayer.style.color = "#ff0000";
                 setTimeout(() => {
-                    cross.style.backgroundColor = "#000000";
+                    currentPlayer.style.color = prevColor;
                 }, 500);
+            }
+            else if (data.type === "new_player") {
+                const playerId = data.player_id;
+                const currentPlayerCount = Object.keys(playerIds).length + 1;
+                playerIds[playerId] = currentPlayerCount;
+                const newPlayerElement = playerElements[currentPlayerCount];
+                newPlayerElement.style.display = "flex";
             }
 
         };
