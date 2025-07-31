@@ -1,0 +1,57 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 30px;
+}
+
+/*Handle*/
+.handle-container {
+  width: 500px;
+}
+#speedHandle {
+  margin-top: 20px;
+  font-weight: bold;
+}
+input[type="range"] {
+  width: 100%;
+}
+
+/*Trigger*/
+.trigger-container {
+  width: 200px;
+}
+#speed {
+  margin-top: 20px;
+  font-weight: bold;
+}
+input[type="range"] {
+  width: 100%;
+}
+
+
+/*Type Range*/
+input[type="range"] {
+  width: 100%;
+}
+
+input[type=range] {
+  pointer-events: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  pointer-events: auto;
+}
+
+/*For FireFox*/
+input[type=range]::-moz-range-thumb {
+  pointer-events: auto;
+}
+
+input[type=range]::-moz-range-track {
+  pointer-events: none;
+}
+
+#fire {
+  font-size: 48px;
+  margin-top: 20px;
+  display: none;
+}
