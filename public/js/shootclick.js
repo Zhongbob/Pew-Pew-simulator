@@ -1,6 +1,6 @@
 function placeShotAt(x, y) {
   const img = document.createElement('img');
-  img.src = 'img/bullet.png';
+  img.src = '/public/assets/bullet.png';
   img.className = "bulletshot";
   img.style.position = 'absolute';
   const imgWidth = 20;
@@ -22,7 +22,7 @@ function placeShotAt(x, y) {
 
 function placeSmokeAt(x, y) {
   const smoke = document.createElement('video');
-  smoke.src = 'img-updated/smoke.webm'; // Use your own path
+  smoke.src = '/public/assets/smoke.webm'; // Use your own path
   smoke.className = 'smoke';
   smoke.style.position = 'absolute';
   smoke.style.width = '100px';
@@ -43,11 +43,22 @@ function placeSmokeAt(x, y) {
   });
 }
 
-document.addEventListener('click', (event) => {
-  placeShotAt(event.clientX, event.clientY);
-  placeSmokeAt(event.clientX, event.clientY);
-  const gunshot = new Audio("sounds/gunshot.mp3");
+function shoot(x, y){
+  let xPixels = x/100 * window.innerWidth;
+  let yPixels = y/100 * window.innerHeight;
+  placeShotAt(xPixels, yPixels);
+  placeSmokeAt(xPixels, yPixels);
+  const gunshot = new Audio("/public/sounds/gunshot.mp3");
   gunshot.play();
   updateAccuracy();
   recordShot();
+}
+document.addEventListener('click', (event) => {
+  shoot(event.clientX*100/window.innerWidth, event.clientY*100/window.innerHeight);
+  // placeShotAt(event.clientX, event.clientY);
+  // placeSmokeAt(event.clientX, event.clientY);
+  // const gunshot = new Audio("/public/sounds/gunshot.mp3");
+  // gunshot.play();
+  // updateAccuracy();
+  // recordShot();
 });

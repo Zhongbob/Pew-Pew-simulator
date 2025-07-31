@@ -17,7 +17,7 @@ function targetup() {
 
     // Creating target
     const target = document.createElement("img");
-    target.src = "img-updated/target-brown.PNG";
+    target.src = "/public/assets/target-brown.PNG";
     target.className = "target";
     target.style.position = 'absolute';
     target.style.left = x + 'px';

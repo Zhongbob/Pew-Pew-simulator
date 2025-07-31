@@ -7,7 +7,7 @@ function placeFireAt(xPercent, yPercent) {
     console.log(`Placing fire at x: ${x}, y: ${y}`);
 
     const img = document.createElement('img');
-    img.src = "img/bullet.png"
+    img.src = "/public/assets/bullet.png"
     img.style.position = 'absolute';
     img.style.left = x + 'px';
     img.style.top = y + 'px';

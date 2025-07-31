@@ -1,6 +1,6 @@
 function placeShotAt(x, y) {
     const img = document.createElement('img');
-    img.src = 'img/bullet.png';
+    img.src = '/public/assets/bullet.png';
     img.style.position = 'absolute';
     const imgWidth = 20;
     const imgHeight = 20;
@@ -20,5 +20,5 @@ function placeShotAt(x, y) {
 }
 
 document.addEventListener('click', (event) => {
-  placeShotAt(event.clientX, event.clientY, 'img/bullet.png');
+  placeShotAt(event.clientX, event.clientY, '/public/assets/bullet.png');
 });

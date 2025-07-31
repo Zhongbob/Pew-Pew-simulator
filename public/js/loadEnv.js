@@ -19,7 +19,7 @@ function spawnScreenTarget() {
 
     //Creating Target board inside etsScreen
     const target = document.createElement("img");
-    target.src = "img-updated/target-bw.PNG";  // Make sure this path is correct
+    target.src = "/public/assets/target-bw.PNG";  // Make sure this path is correct
     target.id = "ScreenTarget";
 
     target.style.alignSelf = "flex-start";
@@ -125,7 +125,7 @@ function slideInElements() {
 
     // ----- Roof -----
     const roof = document.createElement("img");
-    roof.src = "img-updated/roof.PNG";
+    roof.src = "/public/assets/roof.PNG";
     roof.style.position = "absolute";
     roof.style.top = "0";
     roof.style.left = "50%";
@@ -139,7 +139,7 @@ function slideInElements() {
 
     // ----- Table -----
     const table = document.createElement("img");
-    table.src = "img-updated/table.PNG";
+    table.src = "/public/assets/table.PNG";
     table.style.position = "absolute";
     table.style.bottom = "0";
     table.style.left = "50%";
@@ -165,7 +165,7 @@ function slideInElements() {
 
     // Create ETS image
     const ets = document.createElement("img");
-    ets.src = "img-updated/ets-monitor.PNG";
+    ets.src = "/public/assets/ets-monitor.PNG";
     ets.style.width = "100%"; 
     ets.style.height = "auto"; 
     ets.style.objectFit = "contain"; // Maintains aspect ratio
@@ -196,7 +196,7 @@ function loadStartingEnv() {
     backdrop.style.left = "0";
     backdrop.style.width = "100vw";
     backdrop.style.height = "100vh";
-    backdrop.style.backgroundImage = "url('img-updated/range.PNG')";
+    backdrop.style.backgroundImage = "url('/public/assets/range.PNG')";
     backdrop.style.backgroundSize = "cover";
     backdrop.style.backgroundPosition = "center";
     backdrop.style.backgroundRepeat = "no-repeat";
@@ -215,7 +215,7 @@ function loadStartingEnv() {
     humps.style.left = "0";
     humps.style.width = "100vw";
     humps.style.height = "100vh";
-    humps.style.backgroundImage = "url('img-updated/humps.PNG')";
+    humps.style.backgroundImage = "url('/public/assets/humps.PNG')";
     humps.style.backgroundSize = "cover";
     humps.style.backgroundPosition = "center";
     humps.style.backgroundRepeat = "no-repeat";

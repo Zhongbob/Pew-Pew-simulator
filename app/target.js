@@ -5,7 +5,7 @@ function targetup() {
     document.querySelectorAll(".target").forEach(t => t.remove());
 
     const target = document.createElement("img");
-    target.src = "img/target.PNG";
+    target.src = "/public/assets/target.PNG";
     target.className = "target";
     target.style.position = 'absolute';
 
