@@ -43,6 +43,30 @@ function placeSmokeAt(x, y) {
   });
 }
 
+function checkHit(x, y) {
+  const target = document.getElementById("target");
+  if (target) {
+    const rect = target.getBoundingClientRect();
+
+    if (
+      x >= rect.left &&
+      x <= rect.right &&
+      y >= rect.top &&
+      y <= rect.bottom
+    ) {
+      console.log("Target hit.");
+      recordShotHit();
+
+      const offsetX = x - rect.left;
+      const offsetY = y - rect.top;
+      const percentX = offsetX / rect.width;
+      const percentY = offsetY / rect.height;
+
+      markHitOnBoard(percentX, percentY);
+  };
+}
+} 
+
 function shoot(x, y){
   let xPixels = x/100 * window.innerWidth;
   let yPixels = y/100 * window.innerHeight;
@@ -50,6 +74,7 @@ function shoot(x, y){
   placeSmokeAt(xPixels, yPixels);
   const gunshot = new Audio("/public/sounds/gunshot.mp3");
   gunshot.play();
+  checkHit(event.clientX, event.clientY);
   updateAccuracy();
   recordShot();
 }

@@ -13,11 +13,7 @@ const callibrations = {
     "left": [],
     "right": []
 }
-const medians = {
-    "center": 0,
-    "left": 0,
-    "right": 0
-}
+
 const nextCalibration = ["center", "left", "right"];
 const positions = {
     "center": 50,
@@ -50,7 +46,7 @@ ws.onmessage = (event) => {
         const currentElem = playerElements[playerNumber];
         currentElem.style.left = `${positions["center"]}vw`;
         currentElem.style.top = `${positions["center"]}vh`;
-        currentElem.style.display = "none";
+        // currentElem.style.display = "none";
 
     } else if (data.type === "update") {
         let { x, y } = data;
