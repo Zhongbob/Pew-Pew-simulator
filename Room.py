@@ -93,8 +93,8 @@ class Room:
             "x": {k: calculate_median(v) for k, v in self.calibrations[player_id]['x'].items()},
             "y": {k: calculate_median(v) for k, v in self.calibrations[player_id]['y'].items()}
         }
-        self.calibrations_final[player_id]['x']["range"] = angle_difference(self.calibrations_final[player_id]['x']["left"], self.calibrations_final[player_id]['x']["right"])
-        self.calibrations_final[player_id]['y']["range"] = angle_difference(self.calibrations_final[player_id]['y']["left"], self.calibrations_final[player_id]['y']["right"])
+        self.calibrations_final[player_id]['x']["range"] = angle_difference(self.calibrations_final[player_id]['x']["left"], self.calibrations_final[player_id]['x']["right"])/2
+        self.calibrations_final[player_id]['y']["range"] = angle_difference(self.calibrations_final[player_id]['y']["left"], self.calibrations_final[player_id]['y']["right"])/2
         print("Final calibrations:", self.calibrations_final)
         if self.computer_client:
             await self.computer_client.on_calibration_complete(player_id)

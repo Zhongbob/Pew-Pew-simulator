@@ -72,13 +72,12 @@ function shoot(x, y){
   let yPixels = y/100 * window.innerHeight;
   placeShotAt(xPixels, yPixels);
   placeSmokeAt(xPixels, yPixels);
-  const gunshot = new Audio("sounds/gunshot.mp3");
+  const gunshot = new Audio("/public/sounds/gunshot.mp3");
   gunshot.play();
-  checkHit(xPixels, yPixels);
+  checkHit(event.clientX, event.clientY);
   updateAccuracy();
   recordShot();
 }
-
 document.addEventListener('click', (event) => {
   shoot(event.clientX*100/window.innerWidth, event.clientY*100/window.innerHeight);
   // placeShotAt(event.clientX, event.clientY);
