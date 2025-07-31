@@ -1,0 +1,64 @@
+function placeShotAt(x, y) {
+  const img = document.createElement('img');
+  img.src = '/public/assets/bullet.png';
+  img.className = "bulletshot";
+  img.style.position = 'absolute';
+  const imgWidth = 20;
+  const imgHeight = 20;
+  img.style.width = imgWidth + 'px';
+  img.style.height = imgHeight + 'px';
+  img.style.pointerEvents = 'none';
+
+  // Center the image on (x, y)
+  img.style.left = (x - imgWidth / 2) + 'px';
+  img.style.top = (y - imgHeight / 2) + 'px';
+
+  document.body.appendChild(img);
+
+  setTimeout(() => {
+    img.remove();
+  }, 2000);
+}
+
+function placeSmokeAt(x, y) {
+  const smoke = document.createElement('video');
+  smoke.src = '/public/assets/smoke.webm'; // Use your own path
+  smoke.className = 'smoke';
+  smoke.style.position = 'absolute';
+  smoke.style.width = '100px';
+  smoke.style.height = '100px';
+  smoke.style.left = (x - 50) + 'px';
+  smoke.style.top = (y - 75) + 'px';
+  smoke.style.pointerEvents = 'none';
+  smoke.autoplay = true;
+  smoke.loop = false;
+  smoke.muted = true;
+  smoke.playsInline = true;
+
+  document.body.appendChild(smoke);
+
+  // Remove the element after the video ends
+  smoke.addEventListener('ended', () => {
+  smoke.remove();
+  });
+}
+
+function shoot(x, y){
+  let xPixels = x/100 * window.innerWidth;
+  let yPixels = y/100 * window.innerHeight;
+  placeShotAt(xPixels, yPixels);
+  placeSmokeAt(xPixels, yPixels);
+  const gunshot = new Audio("/public/sounds/gunshot.mp3");
+  gunshot.play();
+  updateAccuracy();
+  recordShot();
+}
+document.addEventListener('click', (event) => {
+  shoot(event.clientX*100/window.innerWidth, event.clientY*100/window.innerHeight);
+  // placeShotAt(event.clientX, event.clientY);
+  // placeSmokeAt(event.clientX, event.clientY);
+  // const gunshot = new Audio("/public/sounds/gunshot.mp3");
+  // gunshot.play();
+  // updateAccuracy();
+  // recordShot();
+});

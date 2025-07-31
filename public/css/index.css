@@ -1,0 +1,31 @@
+body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            width:100vw;
+            height: 100vh;
+        }
+        .player1 {
+            color:blue;
+            
+        }
+        .player2 {
+            color:red;
+            transform: translate(-50%, -50%) rotate(45deg) !important;
+        }
+        .player {
+            display: none;
+            height: 32px;
+            width: 32px;
+            position: fixed;
+            left:50vw;
+            top:50vh;
+            font-size: 32px;
+            font-weight: bold;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
