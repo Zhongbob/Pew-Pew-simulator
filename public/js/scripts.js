@@ -88,6 +88,7 @@ trigger.addEventListener("input", () => {
     if (!hasFired) {
       fireCount++;
       updateRounds();
+      shoot();
       counterDisplay.textContent = `Fires: ${fireCount}`;
       hasFired = true;
       if (fireCount >= 30) {

@@ -1,130 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile</title>
-</head>
-
-<body>
-    <style>
-        .shoot {
-            background-color: red;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            height: 50vh;
-            cursor: pointer;
-        }
-        .start {
-            background-color: green;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            width:100%;
-            cursor: pointer;
-        }
-    </style>
-    <div class="shoot">Shoot</div>
-    <div class="start">Start</div>
-    <div class="data">
-        <div>
-            X Rotation: <span id="x-rotation">0</span>
-        </div>
-        <div>
-            Y Rotation: <span id="y-rotation">0</span>
-        </div>
-        <div>
-            Z Rotation: <span id="z-rotation">0</span>
-        </div>
+<html>
+  <head>
+    <title>Trigger Mechanism</title>
+    <link rel="stylesheet" href="/public/css/styles.css">
+  </head>
+  <body>
+    <div class="handle-container">
+      <input type="range" id="handle" min="0" max="100" value="100">
+      <div id="speedHandle">Speed: 0 units/second</div>
     </div>
-    <script>
-        const startButton = document.querySelector(".start");
-        const shootButton = document.querySelector(".shoot");
-        startButton.onclick = (e)=> {
-            e.preventDefault();
-            try{
-                if (
-                DeviceMotionEvent &&
-                typeof DeviceMotionEvent.requestPermission === 'function'
-            ) {
-                DeviceMotionEvent.requestPermission()
-            }
-            
-            window.addEventListener("deviceorientation", handleOrientationEvent);
-            }
-            catch (error) {
-                alert(error);
-            }
-            
-        };
+    
+    <div class="trigger-container">
+      <input type="range" id="trigger" min="0" max="100" value="100">
+      <div id="speed">Speed: 0</div>
+      <div id="fire">🔥</div>
+    </div>
+    <div id="counter">Fires: 0</div>
+    <div id="roundsBtn">Rounds Left: 0</div>
+    <button id="resetBtn">Load New Magazine</button>
 
-        const handleOrientationEvent = (event) => {
-            document.getElementById("x-rotation").textContent = event.alpha.toFixed(2);
-            document.getElementById("y-rotation").textContent = event.beta.toFixed(2);
-            document.getElementById("z-rotation").textContent = event.gamma.toFixed(2);
-        }
-        const handleOrientationEvent2 = (event) => {
-            const z = event.gamma.toFixed(2);
-            let x = event.alpha.toFixed(2);
-            let y = event.beta.toFixed(2);
-            if (Number(z)>0){
-                x = 180 + Number(x);
-                y = 180 - Number(y);
-            }
-            sendData(JSON.stringify({
-                type: "update",
-                x: x,
-                y: y
-            }));
-        }
-        const ws = new WebSocket("wss://" + location.host + "/ws?client=mobile");
-        let currentCalibration = "center";
-        let startShooting = false;
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === "request_calibration") {
-                currentCalibration = data.position;
-            }
-            if (data.type === "calibration_complete") {
-                alert("Calibration complete");
-                startShooting = true;
-                window.addEventListener("deviceorientation", handleOrientationEvent2, false);
-            }
-        };
-        function sendData(data) {
-            ws.send(data);
-        }
-        document.onload = () => {
-            sendData(JSON.stringify({ type: "request_calibration", position: currentCalibration }));
-        }
-        shootButton.onclick = (e) => {
-            e.preventDefault();
-            const z = Number(document.getElementById("z-rotation").textContent.trim());
-            let x = Number(document.getElementById("x-rotation").textContent.trim());
-            let y = Number(document.getElementById("y-rotation").textContent.trim());   
-            if (Number(z)>0){
-                x = 180 + Number(x);
-                y = 180 - Number(y);
-            }
-            if (!startShooting) {
-                sendData(JSON.stringify({
-                type: "calibration",
-                position: currentCalibration,
-                x:x,
-                y:y
-            }));
-            } else {
-                sendData(JSON.stringify({
-                    type: "fire",
-                    x: x,
-                    y: y
-                }));
-            }
-            
-        }
-    </script>
-</body>
-
+    <button id="safetyBtn">Safety On</button>
+    <script src="/public/js/mobile.js"></script>
+    <script src="/public/js/scripts.js"></script>
+  </body>
 </html>
