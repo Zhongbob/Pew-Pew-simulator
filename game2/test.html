@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simple Camera Shake Demo</title>
+  <style>
+    #shakeBox {
+      width: 200px;
+      height: 200px;
+      background-color: steelblue;
+      margin: 50px auto;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      user-select: none;
+      /* smooth transition reset */
+      transition: transform 0.05s ease-out;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="shakeBox">Shake Me!</div>
+  <button id="shakeBtn">Start Shake</button>
+
+  <script>
+    function cameraShake(element, duration = 500, intensity = 5) {
+      const start = performance.now();
+
+      function shakeFrame(now) {
+        const elapsed = now - start;
+        if (elapsed < duration) {
+          const dx = (Math.random() - 0.5) * intensity * 2;
+          const dy = (Math.random() - 0.5) * intensity * 2;
+          element.style.transform = `translate(${dx}px, ${dy}px)`;
+          requestAnimationFrame(shakeFrame);
+        } else {
+          element.style.transform = '';
+        }
+      }
+
+      requestAnimationFrame(shakeFrame);
+    }
+
+    const shakeBtn = document.getElementById('shakeBtn');
+    const shakeBox = document.getElementById('shakeBox');
+
+    shakeBtn.addEventListener('click', () => {
+      cameraShake(shakeBox, 700, 8);
+    });
+  </script>
+
+</body>
+</html>
