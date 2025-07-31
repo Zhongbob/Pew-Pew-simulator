@@ -200,7 +200,6 @@ function loadStartingEnv() {
     backdrop.style.backgroundSize = "cover";
     backdrop.style.backgroundPosition = "center";
     backdrop.style.backgroundRepeat = "no-repeat";
-    backdrop.style.zIndex = "-1"; // Put behind everything
 
     backdrop.style.transform = "scale(1.5)";
     backdrop.style.filter = "blur(10px)";

@@ -50,6 +50,7 @@ ws.onmessage = (event) => {
         const currentElem = playerElements[playerNumber];
         currentElem.style.left = `${positions["center"]}vw`;
         currentElem.style.top = `${positions["center"]}vh`;
+        currentElem.style.display = "none";
 
     } else if (data.type === "update") {
         let { x, y } = data;
