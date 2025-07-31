@@ -4,7 +4,7 @@ function spawnTargetBottomRight() {
 
   // Create image element
   const target = document.createElement("img");
-  target.src = "img/target.PNG";  // Make sure this path is correct
+  target.src = "/public/assets/target.PNG";  // Make sure this path is correct
   target.className = "bottomRightTarget";
 
   // Style it to bottom right
