@@ -71,7 +71,7 @@ ws.onmessage = (event) => {
         document.body.appendChild(cloned_cross);
         const prevColor = playerColors[playerNumber];
         currentPlayer.style.color = "#ff0000";
-        shoot(currentPosition[playerNumber].x, currentPosition[playerNumber].y);
+        shoot(currentPosition[playerNumber].x, currentPosition[playerNumber].y, playerId);
         setTimeout(() => {
             currentPlayer.style.color = prevColor;
         }, 500);
@@ -85,6 +85,13 @@ ws.onmessage = (event) => {
     }
 
 };
+
+function hit(playerId){
+    ws.send(JSON.stringify({
+        type: "hit",
+        player_id: playerId
+    }));
+}
 function sendData(data) {
     ws.send(data);
 }

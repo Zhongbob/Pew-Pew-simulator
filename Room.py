@@ -14,6 +14,9 @@ class Room:
         self.room_id = room_id
         self.computer_client: ComputerClient = None
         self.mobile_clients: list[MobileClient] = []
+        self.hits = {
+            
+        }
         self.calibrations: dict[str, dict[str, list[float]]] = {
 
         }
@@ -93,8 +96,8 @@ class Room:
             "x": {k: calculate_median(v) for k, v in self.calibrations[player_id]['x'].items()},
             "y": {k: calculate_median(v) for k, v in self.calibrations[player_id]['y'].items()}
         }
-        self.calibrations_final[player_id]['x']["range"] = angle_difference(self.calibrations_final[player_id]['x']["left"], self.calibrations_final[player_id]['x']["right"])/2
-        self.calibrations_final[player_id]['y']["range"] = angle_difference(self.calibrations_final[player_id]['y']["left"], self.calibrations_final[player_id]['y']["right"])/2
+        self.calibrations_final[player_id]['x']["range"] = angle_difference(self.calibrations_final[player_id]['x']["left"], self.calibrations_final[player_id]['x']["right"])/1.75
+        self.calibrations_final[player_id]['y']["range"] = angle_difference(self.calibrations_final[player_id]['y']["left"], self.calibrations_final[player_id]['y']["right"])/1.75
         print("Final calibrations:", self.calibrations_final)
         if self.computer_client:
             await self.computer_client.on_calibration_complete(player_id)
@@ -141,7 +144,6 @@ class Room:
             return
         diff_x = angle_difference(x, self.calibrations_final[player_id]['x']["center"])
         diff_y = angle_difference(y, self.calibrations_final[player_id]['y']["center"])
-        print(f"Diff X: {diff_x}, Diff Y: {diff_y}, X: {x} Y: {y}")
         shift_x = -math.copysign(math.fabs(math.tan(diff_x * math.pi / 180) / math.tan(self.calibrations_final[player_id]['x']["range"] * math.pi / 180)) , diff_x)* 50 + 50
         shift_y = math.copysign(math.fabs(math.tan(diff_y * math.pi / 180) / math.tan(self.calibrations_final[player_id]['y']["range"] * math.pi / 180)) , diff_y)* 50 + 50
         new_position_x = max(min(shift_x, 100), 0)
@@ -159,7 +161,6 @@ class Room:
             return
         try:
             while True:
-                print(f"Waiting for messages from {client_type} client.")
                 await client.update()
         except WebSocketDisconnect:
             print("Client disconnected.")
@@ -170,6 +171,14 @@ class Room:
         except Exception as e:
             print(f"Error in client connection: {e}")
             self.remove_client(client)
+    async def hit(self, player_id):
+        if not self.computer_client:
+            print("No computer client connected to handle hit event.")
+            return
+        
+        for mobile in self.mobile_clients:
+            if mobile.id == player_id:
+                await mobile.handle_hit_event()
 
             
         
@@ -189,7 +198,6 @@ class Client:
 
     async def update(self):
         data = await self.receive_message()
-        print(f"Received data: {data}")
 
     async def request_calibration(self, new_calibration):
         await self.websocket.send_text(json.dumps({"type": "request_calibration", "position": new_calibration}))
@@ -219,7 +227,6 @@ class MobileClient(Client):
 
     async def update(self):
         data = await self.receive_message()
-        print(f"Received data: {data}")
         data = json.loads(data)
         if data['type'] == "calibration":
             await self.handle_calibration_event(data)
@@ -227,6 +234,9 @@ class MobileClient(Client):
             await self.handle_fire_event()
         elif data['type'] == "update":
             await self.handle_update_event(data)
+    
+    async def handle_hit_event(self):
+        await self.send_message(json.dumps({"type": "hit"}))
 
 class ComputerClient(Client):
     def __init__(self, websocket, id,room):
@@ -249,3 +259,12 @@ class ComputerClient(Client):
         
     async def request_calibration(self, new_calibration, player_id):
         await self.send_message(json.dumps({"type": "request_calibration", "position": new_calibration, "player_id": player_id}))
+    
+    async def handle_fire_event(self, player_id):
+        await self.room.hit(player_id)
+    
+    async def update(self):
+        data = await self.receive_message()
+        data = json.loads(data)
+        if data['type'] == "hit":
+            await self.handle_fire_event(data['player_id'])

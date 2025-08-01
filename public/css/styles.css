@@ -55,3 +55,16 @@ input[type=range]::-moz-range-track {
   margin-top: 20px;
   display: none;
 }
+
+
+#shoot{
+  font-size: 128px !important;
+  padding: 10px 20px;
+  width:100vw;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display:block;
+}

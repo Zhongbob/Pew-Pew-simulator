@@ -94,11 +94,7 @@ function spawnScreenButtons(){
         buttonsDiv.appendChild(startButton);
         startButton.addEventListener("click", () => {
             console.log("Start!")
-            clearScreen();
-            buttonsDiv.appendChild(currentPercent);
-            resetStats();
-            updateAccuracy();
-            playLevel(mode);
+            
         });
     }
 
@@ -121,65 +117,11 @@ function spawnScreenButtons(){
 
 function slideInElements() {
     // get Backdrop
-    const backdrop = document.getElementById("backdrop");
-
-    // ----- Roof -----
-    const roof = document.createElement("img");
-    roof.src = "/public/assets/roof.PNG";
-    roof.style.position = "absolute";
-    roof.style.top = "0";
-    roof.style.left = "50%";
-    roof.style.transform = "translate(-50%, -150%)"; // slide in from top
-    roof.style.transition = "transform 1s ease-out";
-    roof.style.pointerEvents = "none";
-
-    roof.style.width = "100vw"; // Fill top
-    roof.style.maxHeight = "60vh"; // Prevent it from being too tall
-    backdrop.appendChild(roof);
-
-    // ----- Table -----
-    const table = document.createElement("img");
-    table.src = "/public/assets/table.PNG";
-    table.style.position = "absolute";
-    table.style.bottom = "0";
-    table.style.left = "50%";
-    table.style.transform = "translate(-50%, 150%)"; // slide in from bottom
-    table.style.transition = "transform 1s ease-out";
-
-    table.style.width = "100vw"; // Fill bottom 
-    table.style.maxHeight = "60vh"; // Prevent it from being too tall
-    backdrop.appendChild(table);
-
-    // ----- ETS -----
-    // Create ETS container
-    const etsContainer = document.createElement("div");
-    etsContainer.id = "ets-container";
-    etsContainer.style.position = "fixed";
-    etsContainer.style.bottom = "0";
-    etsContainer.style.right = "0";
-    etsContainer.style.width = "13vw";
-    etsContainer.style.maxHeight = "30vh";
-    etsContainer.style.overflow = "hidden"; // optional safety
-    etsContainer.style.transform = "translateY(100%)";
-    etsContainer.style.transition = "transform 1.2s ease-out";
-
-    // Create ETS image
-    const ets = document.createElement("img");
-    ets.src = "/public/assets/ets-monitor.PNG";
-    ets.style.width = "100%"; 
-    ets.style.height = "auto"; 
-    ets.style.objectFit = "contain"; // Maintains aspect ratio
-    
-    etsContainer.appendChild(ets)
-    backdrop.appendChild(etsContainer);
+    document.body.classList.add("activated");
 
     // Trigger slide-in after a small delay to ensure rendering
     requestAnimationFrame(() => {
-        roof.style.transform = "translate(-50%, 0%)";
-        table.style.transform = "translate(-50%, 0%)";
-        etsContainer.style.transform = "translate(-15%, -15%)";
-
-        spawnScreenTarget();
+        // spawnScreenTarget();
     });
 }
 
@@ -189,44 +131,9 @@ function loadStartingEnv() {
     document.body.style.overflow = "hidden";
 
     // Backdrop
-    const backdrop = document.createElement("div");
-    backdrop.id = "backdrop"
-    backdrop.style.position = "fixed";
-    backdrop.style.top = "0";
-    backdrop.style.left = "0";
-    backdrop.style.width = "100vw";
-    backdrop.style.height = "100vh";
-    backdrop.style.backgroundImage = "url('/public/assets/range.PNG')";
-    backdrop.style.backgroundSize = "cover";
-    backdrop.style.backgroundPosition = "center";
-    backdrop.style.backgroundRepeat = "no-repeat";
-
-    backdrop.style.transform = "scale(1.5)";
-    backdrop.style.filter = "blur(10px)";
-    backdrop.style.transition = "transform 1s ease, filter 1s ease";
-
-    document.body.appendChild(backdrop);
-
-    // Humps
-    const humps = document.createElement("img");
-    humps.style.position = "fixed";
-    humps.style.top = "0";
-    humps.style.left = "0";
-    humps.style.width = "100vw";
-    humps.style.height = "100vh";
-    humps.style.backgroundImage = "url('/public/assets/humps.PNG')";
-    humps.style.backgroundSize = "cover";
-    humps.style.backgroundPosition = "center";
-    humps.style.backgroundRepeat = "no-repeat";
-    humps.style.pointerEvents = "none";
-    humps.style.zIndex = "1";
-
-    backdrop.appendChild(humps);
-
+    const backdrop = document.getElementById("backdrop");
     // Zoom out from beginning
     document.body.addEventListener('click', () => {
-    backdrop.style.transform = "scale(1)";
-    backdrop.style.filter = "blur(0px)";
     slideInElements();
     }, { once: true }); // Only allow one trigger
 }

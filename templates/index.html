@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Computer</title>
     <link rel="stylesheet" href="/public/css/index.css">
 </head>
+
 <body>
     <style>
-        
+
     </style>
-    <div class = "player1 player">
+    <div class="player1 player">
         +
     </div>
-    <div class = "player2 player">
+    <div class="player2 player">
         +
     </div>
-    <script src = "/public/js/clientSocket.js"></script>
+    <button id="toggle" data-dark="false"></button>
+    <div class = "difficulty-container">
+        <button id="easy" class="difficulty">Easy</button>
+        <button id="medium" class="difficulty">Medium</button>
+        <button id="marksmen" class="difficulty">Marksman</button>
+    </div>
+    <div id="backdrop">
+        <img src="/public/assets/range.PNG" class="backdrop-image toggle">
+
+        <img class="toggle humps">
+        <img class="roof" src="/public/assets/roof.PNG">
+        <img class="table" src="/public/assets/table.PNG">
+        <div id="ets-container">
+            <img src="/public/assets/ets-monitor.PNG" class = "ets-monitor">
+            <div id="etsScreen">
+                <img src="/public/assets/target-bw.PNG" id="ScreenTarget">
+                <div class="accuracy-container hide">
+                    <div class="accuracy-count" id="accuracyCount">0/0</div>
+                    <div class="accuracy-value" id="accuracyValue">0%</div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/public/js/clientSocket.js"></script>
     <script src="/public/js/loadEnv.js"></script>
     <script src="/public/js/level.js"></script>
-    <script src="/public/js/shoot.js"></script>
-    <script src="/public/js/shootclick.js"></script>  
-    <script src="/public/js/target.js"></script>
-    <script src="/public/js/resultDisplay.js"></script>     
-    <script src="/public/js/main.js"></script>   
+    <script src="/public/js/shootclick.js"></script>
+    <script src="/public/js/resultDisplay.js"></script>
+    <script src="/public/js/main.js"></script>
 </body>
+
 </html>

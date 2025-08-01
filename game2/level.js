@@ -47,7 +47,7 @@ function createTarget(width, height, classname=""){
 
     // Creating target
     const target = document.createElement("img");
-    target.src = "img-updated/target-brown.PNG";
+    target.src = "/public/assets/target-brown.PNG";
     target.id = "target"
     target.className = "target " + classname;
     target.style.position = 'absolute';

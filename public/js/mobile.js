@@ -60,12 +60,21 @@ ws.onmessage = (event) => {
         startShooting = true;
         window.addEventListener("deviceorientation", handleOrientationEvent2, false);
     }
+    if (data.type === "hit") {
+        navigator.vibrate(1000);
+    }
 };
 function sendData(data) {
     ws.send(data);
 }
 document.onload = () => {
     sendData(JSON.stringify({ type: "request_calibration", position: currentCalibration }));
+}
+
+const fireButton = document.getElementById("shoot");
+fireButton.onclick = (e) => {
+    e.preventDefault();
+    shoot();
 }
 function shoot(){
     const {x, y} = rotations;

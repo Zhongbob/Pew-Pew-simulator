@@ -1,31 +1,316 @@
 body {
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            width:100vw;
-            height: 100vh;
-        }
-        .player1 {
-            color:blue;
-            
-        }
-        .player2 {
-            color:red;
-            transform: translate(-50%, -50%) rotate(45deg) !important;
-        }
-        .player {
-            display: none;
-            height: 32px;
-            width: 32px;
-            position: fixed;
-            left:50vw;
-            top:50vh;
-            font-size: 32px;
-            font-weight: bold;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-        }
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    width: 100vw;
+    height: 100vh;
+}
+
+.player1 {
+    color: blue;
+
+}
+
+.player2 {
+    color: red;
+    transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+.player {
+    display: none;
+    height: 32px;
+    width: 32px;
+    position: fixed;
+    left: 50vw;
+    top: 50vh;
+    font-size: 32px;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+@keyframes sway {
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-20px);
+    }
+
+    50% {
+        transform: translateX(10px);
+    }
+
+    75% {
+        transform: translateX(-5px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.swaying-slow {
+    animation: sway 4s infinite ease-in-out;
+}
+
+.swaying-fast {
+    animation: sway 2s infinite ease-in-out;
+}
+
+#backdrop {
+    filter: brightness(0.5);
+}
+
+.target {
+    z-index: 1000;
+    position: absolute;
+    pointer-events: auto;
+}
+
+.backdrop-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.toggle {
+    transition: filter 1s ease;
+}
+
+.dark .toggle {
+    filter: brightness(0.2);
+}
+
+.target-container {
+    position: absolute;
+}
+
+.blinker {
+    animation: blink 3s infinite;
+    background: red;
+    z-index: 1000;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    filter: blur(3px);
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+
+.humps {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('/public/assets/humps.PNG');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 1;
+}
+
+
+#backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    filter: blur(10px);
+    transform: scale(1.5);
+    transition: transform 1s ease, filter 1s ease;
+}
+
+#toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 10px;
+    background-color: #87CEEB;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+#toggle:hover {
+    filter: brightness(0.8);
+}
+
+#toggle[data-dark="false"]::before {
+    content: "☀️";
+
+}
+
+#toggle[data-dark="true"]::before {
+    content: "🌙";
+}
+
+#toggle[data-dark="true"] {
+    background-color: #0C090A;
+}
+
+.activated #backdrop {
+    transform: scale(1) !important;
+    filter: blur(0px) !important;
+}
+
+.roof {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translate(-50%, -150%);
+    transition: transform 1s ease-out;
+    pointer-events: none;
+    width: 100vw;
+    max-height: 60vh;
+}
+
+.table {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translate(-50%, 150%);
+    transition: transform 1s ease-out;
+    width: 100vw;
+    max-height: 60vh;
+}
+
+#ets-container {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    width: 13vw;
+    max-height: 30vh;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: transform 1s ease-out;
+}
+
+.ets-monitor {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+#etsScreen {
+    inset: 0px;
+    padding: 17% 15% 35%;
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#ScreenTarget {
+    align-self: flex-start;
+    pointer-events: auto;
+    width: 48%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.activated #ets-container {
+    transform: translate(-15%, -15%);
+}
+
+.activated .roof {
+    transform: translate(-50%, 0%);
+}
+
+.activated .table {
+    transform: translate(-50%, 0%);
+}
+
+.difficulty-container{
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    transition: all 1.5s ease;
+    transform: translateY(200%);
+}
+
+.activated .difficulty-container {
+    transform: translateY(0%) !important;
+}
+
+.difficulty{
+    padding: 10px 40px;
+    font-weight:bold;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    
+}
+
+.difficulty:hover {
+    filter: brightness(0.8);
+}
+#easy{
+    background-color: #28a745;
+}
+#medium{
+    background-color: #ffc107;
+}
+#marksmen{
+    background-color: #dc3545;
+}
+
+.selected-difficulty {
+    border: 2px solid white;
+}
+
+.accuracy-container {
+    color:white;
+    padding: 0 0.2rem;
+    width: 50%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.hide{
+    display: none;
+}
+.accuracy-count{
+    font-weight: bold;
+    font-size:1.2rem;
+}
