@@ -2,7 +2,7 @@
 const trigger = document.getElementById("trigger");
 const handle = document.getElementById("handle");
 const fire = document.getElementById("fire");
-const counterDisplay = document.getElementById("counter");
+// const counterDisplay = document.getElementById("counter");
 const resetBtn = document.getElementById("resetBtn");
 const safetyBtn = document.getElementById("safetyBtn");
 const roundsLeft = document.getElementById("roundsLeft");
@@ -123,16 +123,20 @@ handle.addEventListener("input", () => {
 let hasFired = false; // To avoid counting the same hold multiple times
 let fireCount = 0;
 trigger.addEventListener("input", () => {
-  if (!safetyOn && parseInt(trigger.value) === parseInt(trigger.min)) {
+  if (fireCount >= 30) {
+        trigger.disabled = true;
+        roundsLeft.textContent = `Rounds Left: 0 (Disabled)`;
+  }
+  else if (!safetyOn && parseInt(trigger.value) === parseInt(trigger.min)) {
     fire.style.display = "block";
     if (!hasFired) {
       fireCount++;
       updateRounds();
-      counterDisplay.textContent = `Fired: ${fireCount}`;
+      // counterDisplay.textContent = `Fired: ${fireCount}`;
       hasFired = true;
       if (fireCount >= 30) {
         trigger.disabled = true;
-        counterDisplay.textContent = `Fired: ${fireCount} (Disabled)`;
+        roundsLeft.textContent = `Rounds Left: 0 (Disabled)`;
       }
     }
   } 
@@ -146,7 +150,7 @@ trigger.addEventListener("input", () => {
 resetBtn.addEventListener("click", () => {
   roundsCount = 30;
   fireCount = 0;
-  counterDisplay.textContent = `Fires: 0`;
+  // counterDisplay.textContent = `Fires: 0`;
   roundsLeft.textContent = `Rounds Left: 30`;
   resetSlider(trigger);
   handleUnlocked = false;
