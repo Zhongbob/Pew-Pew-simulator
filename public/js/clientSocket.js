@@ -1,9 +1,10 @@
-const path = window.location.pathname; 
+const path = window.location.pathname;
 const pathSegments = path.split('/');
 const room_id = pathSegments[3]
 const ws = new WebSocket(`wss://${location.host}/computer/${room_id}/ws`);
 const playerCrosshairElements = document.querySelectorAll(".player");
 const playerInfos = document.querySelectorAll(".player-info");
+const loadingScreen = document.querySelector(".waiting");
 const playerIds = {
 
 }
@@ -37,6 +38,28 @@ let currentPosition = {
         y: 50
     }
 }
+const connectedPlayers = []
+const stillCalibrating = new Set();
+function startAnimation() {
+    started = true;
+    loadingScreen.dataset.state = "ready";
+    setTimeout(() => {
+        loadingScreen.classList.add("hide");
+        slideInElements();
+    }, 3000)
+}
+const positiveAudio = new Audio("/public/sounds/ding1.mp3");
+function positiveFeedback() {
+    positiveAudio.currentTime = 0;
+    positiveAudio.play();
+}
+
+function positiveFeedback2() {
+    const audio = new Audio("/public/sounds/ding2.mp3");
+    audio.currentTime = 0;
+    audio.play();
+}
+
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
     const playerNo = data.player_no;
@@ -44,6 +67,11 @@ ws.onmessage = (event) => {
     if (data.type === "calibration_complete") {
         currentCrossHair.style.left = `${positions["center"]}vw`;
         currentCrossHair.style.top = `${positions["center"]}vh`;
+        positiveFeedback();
+        stillCalibrating.delete(playerNo);
+        if (!started) {
+            startAnimation();
+        }
         // currentElem.style.display = "none";
 
     } else if (data.type === "update") {
@@ -57,14 +85,53 @@ ws.onmessage = (event) => {
         currentCalibrations[playerNo] = data.position;
         currentCrossHair.style.left = `${positions[data.position]}vw`;
         currentCrossHair.style.top = `${positions[data.position]}vh`;
+        stillCalibrating.add(playerNo);
+        positiveFeedback();
+
+
     }
     else if (data.type === "fire") {
+        if (!currentCrossHair) {
+            console.error(`Crosshair for player ${playerNo} not found.`);
+            return;
+        }
+        currentCrossHair.classList.remove("blink-once");
+        // Force reflow to restart the animation
+        void currentCrossHair.offsetWidth;
+        currentCrossHair.classList.add("blink-once");
+        setTimeout(() => {
+            currentCrossHair.classList.remove("blink-once");
+        }, 500);
+        if (stillCalibrating.has(playerNo)) {
+            positiveFeedback2()
+            return;
+        }
         shoot(currentPosition[playerNo].x, currentPosition[playerNo].y, playerNo);
         setBulletCount(playerNo, data.bullets[0], data.bullets[1]);
     }
     else if (data.type === "new_player") {
+        connectedPlayers.push(playerNo);
         currentCrossHair.classList.remove("invisible");
         playerInfos[playerNo - 1].classList.remove("invisible");
+        const alreadyCalibrated = data.already_calibrated;
+        if (alreadyCalibrated) {
+            loadingScreen.dataset.state = "ready";
+            positiveFeedback();
+            if (!started) {
+                startAnimation();
+            }
+        }
+        else if (!started) {
+            loadingScreen.dataset.state = "calibrating";
+        }
+    }
+    else if (data.type === "disconnect") {
+        const index = connectedPlayers.indexOf(playerNo);
+        if (index > -1) {
+            connectedPlayers.splice(index, 1);
+        }
+        currentCrossHair.classList.add("invisible");
+        playerInfos[playerNo - 1].classList.add("invisible");
     }
     else if (data.type === "reload") {
         setBulletCount(playerNo, data.bullets[0], data.bullets[1]);
@@ -77,13 +144,13 @@ function setBulletCount(playerNo, currentCount, totalCount) {
     const bulletCountElement = playerInfo.querySelector(".count");
     bulletCountElement.textContent = `${currentCount}`;
     const totalCountElement = playerInfo.querySelector(".total-count");
-    if (totalCount === -1){
+    if (totalCount === -1) {
         totalCountElement.textContent = "INF";
     } else {
         totalCountElement.textContent = `${totalCount}`;
     }
 }
-function hit(playerNo){
+function hit(playerNo) {
     ws.send(JSON.stringify({
         type: "hit",
         player_no: playerNo

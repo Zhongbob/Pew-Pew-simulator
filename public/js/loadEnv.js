@@ -132,10 +132,10 @@ function loadStartingEnv() {
 
     // Backdrop
     const backdrop = document.getElementById("backdrop");
-    // Zoom out from beginning
-    document.body.addEventListener('click', () => {
-    slideInElements();
-    }, { once: true }); // Only allow one trigger
+    // // Zoom out from beginning
+    // document.body.addEventListener('click', () => {
+    // slideInElements();
+    // }, { once: true }); // Only allow one trigger
 }
 
 

@@ -33,12 +33,16 @@ class Room:
     async def set_computer_client(self, websocket):
         uuid = str(uuid4())
         if (self.computer_client is not None):
-            print("Replacing existing computer client.")
-            self.remove_computer_client()
+            print("Another computer client is already connected.")
+            websocket.close(code=4000, reason="Another computer client is already connected.")
+            return None
         new_computer = ComputerClient(websocket, uuid, self)
         self.computer_client = new_computer
         for player_no in self.mobile_clients.keys():
-            await new_computer.new_player_connected(player_no)
+            already_calibrated = player_no in self.calibrations_final
+            await new_computer.new_player_connected(player_no, already_calibrated)
+            if not already_calibrated:
+                await new_computer.request_calibration(self.current_calibration_position[player_no], player_no)
         return new_computer
 
     async def add_mobile_client(self, websocket):
@@ -58,10 +62,7 @@ class Room:
             "x": {},
             "y": {}
         }
-        self.calibrations_final[player_no] = {
-            "x": {},
-            "y": {}
-        }
+
         self.mobile_clients[player_no] = new_mobile
         if self.computer_client:
             print(f"New mobile client connected: player_{player_no}")
@@ -83,6 +84,9 @@ class Room:
         print(f"Removing mobile client: {client.player_no}")
         # Remove the client from the mobile_clients dictionary
         self.mobile_clients.pop(client.player_no, None)
+        if self.computer_client:
+            print(f"Handling player disconnect for player_no {client.player_no}")
+            asyncio.create_task(self.computer_client.handle_player_disconnect(client.player_no))
 
 
     def remove_computer_client(self):
@@ -106,6 +110,7 @@ class Room:
             self.calibrations.clear()
             self.calibrations_final.clear()
             self.current_calibration_position.clear()
+        print(self.calibrations_final)
     
     async def on_calibration_complete(self, player_no):
         print("Calibration complete. Final calibrations:", self.calibrations)
@@ -134,6 +139,9 @@ class Room:
         return self.current_calibration_position[player_no]
 
     async def add_calibration_data(self, position, x, y, player_no):
+        if (not self.computer_client):
+            print("No computer client connected to handle calibration data.")
+            return
         if position not in self.calibrations[player_no]['x']:
             self.calibrations[player_no]['x'][position] = []
         if position not in self.calibrations[player_no]['y']:
@@ -144,6 +152,8 @@ class Room:
         print(self.calibrations)
         if len(self.calibrations[player_no]['x'][position]) >= 5 and len(self.calibrations[player_no]['y'][position]) >= 5:
             await self.next_calibration_position(position, player_no)
+        else: 
+            await self.computer_client.handle_fire_event(player_no)
 
 
     async def fire(self, player_no):
@@ -277,6 +287,7 @@ class ComputerClient(Client):
         await self.send_message(json.dumps({"type": "reload", "player_no": player_no, "bullets": bullets}))
         
     async def handle_fire_event(self, player_no: int):
+        print(f"Handling fire event for player {player_no}")
         await self.send_message(json.dumps({"type": "fire", "player_no": player_no}))
     
     async def handle_update_event(self, data, player_no: int):
@@ -285,21 +296,24 @@ class ComputerClient(Client):
     async def on_calibration_complete(self, player_no: int):
         await self.send_message(json.dumps({"type": "calibration_complete", "player_no": player_no}))
 
+    async def handle_player_disconnect(self, player_no: int):
+        await self.send_message(json.dumps({"type": "disconnect", "player_no": player_no}))
+    
     async def fire(self, player_no: int, bullets: int):
         await self.send_message(json.dumps({"type": "fire", "player_no": player_no, "bullets": bullets}))
 
-    async def new_player_connected(self, player_no: int):
-        await self.send_message(json.dumps({"type": "new_player", "player_no": player_no}))
+    async def new_player_connected(self, player_no: int, already_calibrated: bool = False):
+        await self.send_message(json.dumps({"type": "new_player", "player_no": player_no, "already_calibrated": already_calibrated}))
         await self.request_calibration(self.room.current_calibration_position[player_no], player_no)
 
     async def request_calibration(self, new_calibration, player_no: int):
         await self.send_message(json.dumps({"type": "request_calibration", "position": new_calibration, "player_no": player_no}))
 
-    async def handle_fire_event(self, player_no: int):
+    async def handle_hit_event(self, player_no: int):
         await self.room.hit(player_no)
     
     async def update(self):
         data = await self.receive_message()
         data = json.loads(data)
         if data['type'] == "hit":
-            await self.handle_fire_event(data['player_no'])
+            await self.handle_hit_event(data['player_no'])
