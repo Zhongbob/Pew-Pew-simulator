@@ -5,7 +5,11 @@ const fire = document.getElementById("fire");
 const counterDisplay = document.getElementById("counter");
 const resetBtn = document.getElementById("resetBtn");
 const safetyBtn = document.getElementById("safetyBtn");
-const roundsBtn = document.getElementById("roundsBtn");
+const roundsLeft = document.getElementById("roundsLeft");
+
+const barrelCover = document.getElementById('barrelCover');
+const distValue = document.getElementById('distValue');
+
 
 //Functions
 let roundsCount = 30;
@@ -13,9 +17,9 @@ let roundsCount = 30;
 function updateRounds() {
   if (roundsCount > 0) {
     roundsCount--;
-    roundsBtn.textContent = `Rounds Left: ${roundsCount}`;
+    roundsLeft.textContent = `Rounds Left: ${roundsCount}`;
   } else {
-    roundsBtn.textContent = `Rounds Left: ${roundsCount}`;
+    roundsLeft.textContent = `Rounds Left: ${roundsCount}`;
   }
 }
 
@@ -34,7 +38,7 @@ function setupSliderSpeed(sliderID, speedID) {
     const valueDiff = -(currentValue - lastValue);
 
     const speed = timeDiff > 0 ? (valueDiff / timeDiff).toFixed(2) : 0;
-    speedDisplay.textContent = `Speed: ${speed}`;
+    speedDisplay.textContent = `${sliderID.charAt(0).toUpperCase() + sliderID.slice(1)} Speed: ${speed}`;
 
     lastTime = now;
     lastValue = currentValue;
@@ -45,6 +49,42 @@ function setupSliderSpeed(sliderID, speedID) {
 function resetSlider(slider) {
   slider.value = slider.max;
 }
+
+function updateBoltPosition() {
+  const dist = parseInt(handle.value);
+  barrelCover.style.left = `${dist}px`;
+  distValue.textContent = `${dist}px`;
+}
+
+//Fullscreen
+function toggleFullscreen() {
+  const elem = document.documentElement;
+  const btn = document.getElementById("fullscreenBtn");
+
+  if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+    // Enter fullscreen
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen();
+    }
+    btn.textContent = "Exit Fullscreen";
+  } 
+  else {
+    // Exit fullscreen
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+    btn.textContent = "Enter Fullscreen";
+  }
+}
+
 
 // Safety button
 let safetyOn = true;
@@ -88,12 +128,11 @@ trigger.addEventListener("input", () => {
     if (!hasFired) {
       fireCount++;
       updateRounds();
-      shoot();
-      counterDisplay.textContent = `Fires: ${fireCount}`;
+      counterDisplay.textContent = `Fired: ${fireCount}`;
       hasFired = true;
       if (fireCount >= 30) {
         trigger.disabled = true;
-        counterDisplay.textContent = `Fires: ${fireCount} (Disabled)`;
+        counterDisplay.textContent = `Fired: ${fireCount} (Disabled)`;
       }
     }
   } 
@@ -108,9 +147,8 @@ resetBtn.addEventListener("click", () => {
   roundsCount = 30;
   fireCount = 0;
   counterDisplay.textContent = `Fires: 0`;
-  roundsBtn.textContent = `Rounds Left: 30`;
+  roundsLeft.textContent = `Rounds Left: 30`;
   resetSlider(trigger);
-  reload();
   handleUnlocked = false;
   trigger.disabled = true;
 });
@@ -121,5 +159,10 @@ trigger.addEventListener("touchend", () => resetSlider(trigger)); // for mobile
 handle.addEventListener("mouseup", () => resetSlider(handle)); // for mouse
 handle.addEventListener("touchend", () => resetSlider(handle)); // for mobile
 
+handle.addEventListener("mouseup", () => updateBoltPosition()); // for mouse
+handle.addEventListener("touchend", () => updateBoltPosition()); // for mobile
+
 setupSliderSpeed("trigger", "speed");
 setupSliderSpeed("handle", "speedHandle");
+
+handle.addEventListener('input', updateBoltPosition);
