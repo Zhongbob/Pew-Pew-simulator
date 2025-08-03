@@ -110,6 +110,7 @@ resetBtn.addEventListener("click", () => {
   counterDisplay.textContent = `Fires: 0`;
   roundsBtn.textContent = `Rounds Left: 30`;
   resetSlider(trigger);
+  reload();
   handleUnlocked = false;
   trigger.disabled = true;
 });

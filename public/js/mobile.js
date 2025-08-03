@@ -98,3 +98,9 @@ function shoot(){
     }
 
 }
+
+function reload(){
+    sendData(JSON.stringify({
+        type: "reload"
+    }));
+}

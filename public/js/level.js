@@ -1,6 +1,6 @@
 let totalShots = 0;
 let shotsHit = 0;
-
+let currentInterval = null;
 function recordShot() {
     totalShots++;
 }
@@ -28,7 +28,7 @@ function updateAccuracy() {
     const currentCount = document.getElementById("accuracyCount");
     currentCount.textContent = `${shotsHit}/${totalShots}`;
     const percentage = calcAccuracy();
-    
+
     currentPercent.textContent = `${percentage}`;
 }
 
@@ -74,7 +74,9 @@ function createTarget(width, height, classname = "") {
 
 function easyMode() {
     // Static large targets, 4s
-    setInterval(() => {
+    clearElements();
+    createTarget(40, 55);
+    currentInterval = setInterval(() => {
         clearElements();
         createTarget(40, 55);
     }, 4000);
@@ -82,7 +84,9 @@ function easyMode() {
 
 function midMode() {
     // Slow moving targets, 8s
-    setInterval(() => {
+    clearElements();
+    createTarget(30, 35, "swaying-slow");
+    currentInterval = setInterval(() => {
         clearElements();
         createTarget(30, 35, "swaying-slow");
     }, 8000);
@@ -90,26 +94,28 @@ function midMode() {
 
 function marksmenMode() {
     // Fast moving targets, 6s
-    setInterval(() => {
+    clearElements();
+    createTarget(30, 35, "swaying-fast");
+    currentInterval = setInterval(() => {
         clearElements();
         createTarget(30, 35, "swaying-fast");
     }, 6000);
 }
 
 function playLevel(mode) {
+    if (currentInterval) {
+        clearInterval(currentInterval);
+    }
     if (mode === "easy") {
         easyMode();
     } else if (mode === "mid") {
         midMode();
     } else if (mode === "marksmen") {
         marksmenMode();
-    } else {
-        spawnScreenButtons();
     }
 }
 
 function toggleNight() {
-    const current = toggle.getAttribute("data-dark");
     if (!isDarkMode()) {
         document.body.classList.add("dark");
         toggle.setAttribute("data-dark", "true");
@@ -133,7 +139,7 @@ function isDarkMode() {
     return toggle && toggle.getAttribute("data-dark") === "true";
 }
 
-function checkHitElement(element,x,y){
+function checkHitElement(element, x, y) {
     const rect = element.getBoundingClientRect();
     const elementLeft = rect.left;
     const elementRight = rect.right;

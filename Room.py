@@ -153,6 +153,10 @@ class Room:
         if player_no not in self.bullets:
             # -1 indicates infinite total bullets
             self.bullets[player_no] = [30, -1]
+        if self.bullets[player_no][0] <= 0:
+            print(f"No bullets left for player {player_no}.")
+            return
+        self.bullets[player_no][0] -= 1
         await self.computer_client.fire(player_no, self.bullets[player_no])
 
     async def update_cursor_position(self,player_no, x, y):
@@ -167,6 +171,12 @@ class Room:
         new_position_y = max(min(shift_y, 100), 0)
         await self.computer_client.send_message(json.dumps({"type": "update", "player_no": player_no, "x": new_position_x, "y": new_position_y}))
 
+    async def reload(self, player_no):
+        if player_no not in self.bullets:
+            self.bullets[player_no] = [30, -1]  # Reset to 30 bullets if not already set
+        self.bullets[player_no][0] = 30
+        await self.computer_client.handle_reload_event(player_no, self.bullets[player_no])
+        
     async def start(self, websocket, client_type):
         
         if client_type == "mobile":
@@ -186,6 +196,7 @@ class Room:
             
             self.remove_client(client)
         except Exception as e:
+            print(e)
             print(f"Error in client connection: {e}")
             self.remove_client(client)
     async def hit(self, player_no):
@@ -209,6 +220,7 @@ class Client:
             await self.websocket.send_text(message)
     
     async def receive_message(self):
+        
         return await self.websocket.receive_text()
 
     async def update(self):
@@ -248,7 +260,12 @@ class MobileClient(Client):
             await self.handle_fire_event()
         elif data['type'] == "update":
             await self.handle_update_event(data)
+        elif data['type'] == "reload":
+            await self.handle_reload_event()
     
+    async def handle_reload_event(self):
+        await self.room.reload(self.player_no)
+        
     async def handle_hit_event(self):
         await self.send_message(json.dumps({"type": "hit"}))
 
@@ -256,6 +273,9 @@ class ComputerClient(Client):
     def __init__(self, websocket, id,room):
         super().__init__(websocket, id, "computer", room)
 
+    async def handle_reload_event(self, player_no: int, bullets: list[int]):
+        await self.send_message(json.dumps({"type": "reload", "player_no": player_no, "bullets": bullets}))
+        
     async def handle_fire_event(self, player_no: int):
         await self.send_message(json.dumps({"type": "fire", "player_no": player_no}))
     

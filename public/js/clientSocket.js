@@ -60,14 +60,29 @@ ws.onmessage = (event) => {
     }
     else if (data.type === "fire") {
         shoot(currentPosition[playerNo].x, currentPosition[playerNo].y, playerNo);
+        setBulletCount(playerNo, data.bullets[0], data.bullets[1]);
     }
     else if (data.type === "new_player") {
         currentCrossHair.classList.remove("invisible");
         playerInfos[playerNo - 1].classList.remove("invisible");
     }
+    else if (data.type === "reload") {
+        setBulletCount(playerNo, data.bullets[0], data.bullets[1]);
+    }
 
 };
 
+function setBulletCount(playerNo, currentCount, totalCount) {
+    const playerInfo = playerInfos[playerNo - 1];
+    const bulletCountElement = playerInfo.querySelector(".count");
+    bulletCountElement.textContent = `${currentCount}`;
+    const totalCountElement = playerInfo.querySelector(".total-count");
+    if (totalCount === -1){
+        totalCountElement.textContent = "INF";
+    } else {
+        totalCountElement.textContent = `${totalCount}`;
+    }
+}
 function hit(playerNo){
     ws.send(JSON.stringify({
         type: "hit",

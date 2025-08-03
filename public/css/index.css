@@ -104,7 +104,6 @@ body {
 
 .target {
     z-index: 1000;
-    position: absolute;
     pointer-events: auto;
 }
 
@@ -138,9 +137,11 @@ body {
     position: absolute;
     left: 50%;
     top: 50%;
+    display: block;
     transform: translate(-50%, -50%);
     border-radius: 50%;
     filter: blur(3px);
+    z-index: 1001;
 }
 
 @keyframes blink {
@@ -167,7 +168,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     pointer-events: none;
-    z-index: 1;
+    z-index: 2000;
 }
 
 
@@ -326,17 +327,21 @@ body {
     filter: brightness(0.8);
 }
 #easy{
-    background-color: #28a745;
+    background-color: #28a7467d;
+    border: 2px solid #28a746;
 }
-#medium{
-    background-color: #ffc107;
+#mid{
+    background-color: #ffc10781;
+    border: 2px solid #ffc107;
 }
 #marksmen{
-    background-color: #dc3545;
+    background-color: #dc354680;
+    border: 2px solid #dc3546;
 }
 
 .selected-difficulty {
-    border: 2px solid white;
+    filter: brightness(1.2);
+    box-shadow: 0 0 5px 2px white;
 }
 
 .accuracy-container {
