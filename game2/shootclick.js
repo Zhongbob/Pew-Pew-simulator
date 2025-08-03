@@ -19,29 +19,31 @@ function placeShotAt(x, y) {
     img.remove();
   }, 2000);
 }
+// Preload the video once
+const smokeTemplate = document.createElement('video');
+smokeTemplate.src = 'img/smoke.webm';
+smokeTemplate.autoplay = true;
+smokeTemplate.loop = false;
+smokeTemplate.muted = true;
+smokeTemplate.playsInline = true;
+smokeTemplate.preload = 'auto'; // Preload for caching
 
 function placeSmokeAt(x, y) {
-  const smoke = document.createElement('video');
-  smoke.src = 'img-updated/smoke.webm'; // Use your own path
-  smoke.className = 'smoke';
+  // Clone the preloaded video
+  const smoke = smokeTemplate.cloneNode(true);
   smoke.style.position = 'absolute';
-  smoke.style.width = '100px';
-  smoke.style.height = '100px';
   smoke.style.left = (x - 50) + 'px';
   smoke.style.top = (y - 75) + 'px';
-  smoke.style.pointerEvents = 'none';
-  smoke.autoplay = true;
-  smoke.loop = false;
-  smoke.muted = true;
-  smoke.playsInline = true;
 
+  // Append to body
   document.body.appendChild(smoke);
 
-  // Remove the element after the video ends
+  // Remove it after it ends
   smoke.addEventListener('ended', () => {
-  smoke.remove();
+    smoke.remove();
   });
 }
+
 
 function checkHit(x, y) {
   const target = document.getElementById("target");
@@ -63,13 +65,13 @@ function checkHit(x, y) {
       const percentY = offsetY / rect.height;
 
       markHitOnBoard(percentX, percentY);
-  };
+    };
+  }
 }
-} 
 
-function shoot(x, y){
-  let xPixels = x/100 * window.innerWidth;
-  let yPixels = y/100 * window.innerHeight;
+function shoot(x, y) {
+  let xPixels = x / 100 * window.innerWidth;
+  let yPixels = y / 100 * window.innerHeight;
   placeShotAt(xPixels, yPixels);
   placeSmokeAt(xPixels, yPixels);
   const gunshot = new Audio("sounds/gunshot.mp3");
