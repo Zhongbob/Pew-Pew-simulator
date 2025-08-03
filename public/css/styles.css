@@ -32,7 +32,7 @@ input#handle[type=range]::-webkit-slider-thumb {
 /*Trigger*/
 input#trigger[type=range] {
   width: 150px;
-  background: black; /* Remove default background */
+  background: transparent; /* Remove default background */
   -webkit-appearance: none;
   pointer-events: none;
 }
