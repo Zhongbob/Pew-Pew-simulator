@@ -13,14 +13,17 @@ class Room:
     def __init__(self, room_id : int):
         self.room_id = room_id
         self.computer_client: ComputerClient = None
-        self.mobile_clients: list[MobileClient] = []
+        self.mobile_clients: dict[int, MobileClient] = {}
+        self.bullets: dict[int, list[int]] = {
+            
+        }
         self.hits = {
             
         }
-        self.calibrations: dict[str, dict[str, list[float]]] = {
+        self.calibrations: dict[int, dict[str, list[float]]] = {
 
         }
-        self.calibrations_final: dict[str, dict[str, float]] = {
+        self.calibrations_final: dict[int, dict[str, float]] = {
 
         }
         self.current_calibration_position = {
@@ -34,26 +37,35 @@ class Room:
             self.remove_computer_client()
         new_computer = ComputerClient(websocket, uuid, self)
         self.computer_client = new_computer
-        for mobile in self.mobile_clients:
-            await new_computer.new_player_connected(mobile.id)
+        for player_no in self.mobile_clients.keys():
+            await new_computer.new_player_connected(player_no)
         return new_computer
 
     async def add_mobile_client(self, websocket):
-        uuid = str(uuid4())
-        new_mobile = MobileClient(websocket, uuid, self)
-        self.current_calibration_position[uuid] = "center"
-        self.calibrations[uuid] = {
+        player_no = None
+        if len(self.mobile_clients) >= 4:
+            print("Maximum number of mobile clients reached.")
+            websocket.close(code=4000, reason="Maximum number of mobile clients reached.")
+            return None
+        for i in range(1,5):
+            if i not in self.mobile_clients:
+                player_no = i
+                break
+        
+        new_mobile = MobileClient(websocket, player_no, self)
+        self.current_calibration_position[player_no] = "center"
+        self.calibrations[player_no] = {
             "x": {},
             "y": {}
         }
-        self.calibrations_final[uuid] = {
+        self.calibrations_final[player_no] = {
             "x": {},
             "y": {}
         }
-        self.mobile_clients.append(new_mobile)
+        self.mobile_clients[player_no] = new_mobile
         if self.computer_client:
-            print(f"New mobile client connected: {uuid}")
-            await self.computer_client.new_player_connected(uuid)
+            print(f"New mobile client connected: player_{player_no}")
+            await self.computer_client.new_player_connected(player_no)
         return new_mobile
     
     def remove_client(self, client):
@@ -65,9 +77,14 @@ class Room:
             print(f"Unknown client type: {type(client)}")
         
     def remove_mobile_client(self, client):
-        if client in self.mobile_clients:
-            self.mobile_clients.remove(client)
-    
+        if client.player_no not in self.mobile_clients:
+            print(f"Mobile client with player_no {client.player_no} not found.")
+            return
+        print(f"Removing mobile client: {client.player_no}")
+        # Remove the client from the mobile_clients dictionary
+        self.mobile_clients.pop(client.player_no, None)
+
+
     def remove_computer_client(self):
         self.computer_client = None
     
@@ -77,78 +94,78 @@ class Room:
             "mobile": self.mobile_clients
         }
         
-    def clear_calibrations(self, player_id=None):
-        if player_id:
-            if player_id in self.calibrations:
-                del self.calibrations[player_id]
-            if player_id in self.calibrations_final:
-                del self.calibrations_final[player_id]
-            if player_id in self.current_calibration_position:
-                del self.current_calibration_position[player_id]
+    def clear_calibrations(self, player_no=None):
+        if player_no:
+            if player_no in self.calibrations:
+                del self.calibrations[player_no]
+            if player_no in self.calibrations_final:
+                del self.calibrations_final[player_no]
+            if player_no in self.current_calibration_position:
+                del self.current_calibration_position[player_no]
         else:
             self.calibrations.clear()
             self.calibrations_final.clear()
             self.current_calibration_position.clear()
     
-    async def on_calibration_complete(self, player_id):
+    async def on_calibration_complete(self, player_no):
         print("Calibration complete. Final calibrations:", self.calibrations)
-        self.calibrations_final[player_id] = {
-            "x": {k: calculate_median(v) for k, v in self.calibrations[player_id]['x'].items()},
-            "y": {k: calculate_median(v) for k, v in self.calibrations[player_id]['y'].items()}
+        self.calibrations_final[player_no] = {
+            "x": {k: calculate_median(v) for k, v in self.calibrations[player_no]['x'].items()},
+            "y": {k: calculate_median(v) for k, v in self.calibrations[player_no]['y'].items()}
         }
-        self.calibrations_final[player_id]['x']["range"] = angle_difference(self.calibrations_final[player_id]['x']["left"], self.calibrations_final[player_id]['x']["right"])/1.75
-        self.calibrations_final[player_id]['y']["range"] = angle_difference(self.calibrations_final[player_id]['y']["left"], self.calibrations_final[player_id]['y']["right"])/1.75
+        self.calibrations_final[player_no]['x']["range"] = angle_difference(self.calibrations_final[player_no]['x']["left"], self.calibrations_final[player_no]['x']["right"])/1.75
+        self.calibrations_final[player_no]['y']["range"] = angle_difference(self.calibrations_final[player_no]['y']["left"], self.calibrations_final[player_no]['y']["right"])/1.75
         print("Final calibrations:", self.calibrations_final)
         if self.computer_client:
-            await self.computer_client.on_calibration_complete(player_id)
-        for mobile in self.mobile_clients:
-            if mobile.id == player_id:
-                await mobile.on_calibration_complete()
+            await self.computer_client.on_calibration_complete(player_no)
+        await self.mobile_clients[player_no].on_calibration_complete()
 
-    async def next_calibration_position(self, position, player_id):
-        print(f"Next calibration position for {player_id}: {position}")
-        self.current_calibration_position[player_id] = next_calibration.get(position, None)
+    async def next_calibration_position(self, position, player_no):
+        print(f"Next calibration position for {player_no}: {position}")
+        self.current_calibration_position[player_no] = next_calibration.get(position, None)
         print(f"Next calibration position: {self.current_calibration_position}")
-        if self.current_calibration_position[player_id] is None:
+        if self.current_calibration_position[player_no] is None:
             print("Calibration complete.")
-            await self.on_calibration_complete(player_id)
+            await self.on_calibration_complete(player_no)
             return None
-        await self.computer_client.request_calibration(self.current_calibration_position[player_id], player_id)
-        for mobile in self.mobile_clients:
-            if mobile.id == player_id:
-                await mobile.request_calibration(self.current_calibration_position[player_id])
-        return self.current_calibration_position[player_id]
+        await self.computer_client.request_calibration(self.current_calibration_position[player_no], player_no)
 
-    async def add_calibration_data(self, position, x, y, player_id):
-        if position not in self.calibrations[player_id]['x']:
-            self.calibrations[player_id]['x'][position] = []
-        if position not in self.calibrations[player_id]['y']:
-            self.calibrations[player_id]['y'][position] = []
-        self.calibrations[player_id]['x'][position].append(x)
-        self.calibrations[player_id]['y'][position].append(y)
-        print(f"Calibration for {position}: {self.calibrations[player_id]['x'][position]}")
+        await self.mobile_clients[player_no].request_calibration(self.current_calibration_position[player_no])
+        return self.current_calibration_position[player_no]
+
+    async def add_calibration_data(self, position, x, y, player_no):
+        if position not in self.calibrations[player_no]['x']:
+            self.calibrations[player_no]['x'][position] = []
+        if position not in self.calibrations[player_no]['y']:
+            self.calibrations[player_no]['y'][position] = []
+        self.calibrations[player_no]['x'][position].append(x)
+        self.calibrations[player_no]['y'][position].append(y)
+        print(f"Calibration for {position}: {self.calibrations[player_no]['x'][position]}")
         print(self.calibrations)
-        if len(self.calibrations[player_id]['x'][position]) >= 5 and len(self.calibrations[player_id]['y'][position]) >= 5:
-            await self.next_calibration_position(position, player_id)
+        if len(self.calibrations[player_no]['x'][position]) >= 5 and len(self.calibrations[player_no]['y'][position]) >= 5:
+            await self.next_calibration_position(position, player_no)
 
 
-    async def fire(self, player_id):
+    async def fire(self, player_no):
         if not self.computer_client:
             print("No computer client connected to fire event.")
             return
-        await self.computer_client.fire(player_id)
+        if player_no not in self.bullets:
+            # -1 indicates infinite total bullets
+            self.bullets[player_no] = [30, -1]
+        await self.computer_client.fire(player_no, self.bullets[player_no])
 
-    async def update_cursor_position(self,player_id, x, y):
+    async def update_cursor_position(self,player_no, x, y):
         if not self.computer_client:
             print("No computer client connected to update cursor position.")
             return
-        diff_x = angle_difference(x, self.calibrations_final[player_id]['x']["center"])
-        diff_y = angle_difference(y, self.calibrations_final[player_id]['y']["center"])
-        shift_x = -math.copysign(math.fabs(math.tan(diff_x * math.pi / 180) / math.tan(self.calibrations_final[player_id]['x']["range"] * math.pi / 180)) , diff_x)* 50 + 50
-        shift_y = math.copysign(math.fabs(math.tan(diff_y * math.pi / 180) / math.tan(self.calibrations_final[player_id]['y']["range"] * math.pi / 180)) , diff_y)* 50 + 50
+        diff_x = angle_difference(x, self.calibrations_final[player_no]['x']["center"])
+        diff_y = angle_difference(y, self.calibrations_final[player_no]['y']["center"])
+        shift_x = -math.copysign(math.fabs(math.tan(diff_x * math.pi / 180) / math.tan(self.calibrations_final[player_no]['x']["range"] * math.pi / 180)) , diff_x)* 50 + 50
+        shift_y = math.copysign(math.fabs(math.tan(diff_y * math.pi / 180) / math.tan(self.calibrations_final[player_no]['y']["range"] * math.pi / 180)) , diff_y)* 50 + 50
         new_position_x = max(min(shift_x, 100), 0)
         new_position_y = max(min(shift_y, 100), 0)
-        await self.computer_client.send_message(json.dumps({"type": "update", "player_id": player_id, "x": new_position_x, "y": new_position_y}))
+        await self.computer_client.send_message(json.dumps({"type": "update", "player_no": player_no, "x": new_position_x, "y": new_position_y}))
 
     async def start(self, websocket, client_type):
         
@@ -171,14 +188,12 @@ class Room:
         except Exception as e:
             print(f"Error in client connection: {e}")
             self.remove_client(client)
-    async def hit(self, player_id):
+    async def hit(self, player_no):
         if not self.computer_client:
             print("No computer client connected to handle hit event.")
             return
-        
-        for mobile in self.mobile_clients:
-            if mobile.id == player_id:
-                await mobile.handle_hit_event()
+
+        await self.mobile_clients[player_no].handle_hit_event()
 
             
         
@@ -203,26 +218,25 @@ class Client:
         await self.websocket.send_text(json.dumps({"type": "request_calibration", "position": new_calibration}))
     
 class MobileClient(Client):
-    def __init__(self, websocket, id, room):
-        if id is None:
-            id = f"mobile_{len(room.mobile_clients) + 1}"
-        super().__init__(websocket,id, "mobile", room)
+    def __init__(self, websocket, player_no, room):
+        self.player_no = player_no
+        super().__init__(websocket, f"mobile_{player_no}", "mobile", room)
     
 
     async def handle_calibration_event(self, data):
         position = data['position']
         x = float(data['x'])
         y = float(data['y'])
-        await self.room.add_calibration_data(position, x, y, self.id)
-        print(f"Calibration for {position}: {self.room.calibrations[self.id]['x'][position]}")
+        await self.room.add_calibration_data(position, x, y, self.player_no)
+        print(f"Calibration for {position}: {self.room.calibrations[self.player_no]['x'][position]}")
 
     async def handle_fire_event(self):
-        await self.room.fire(self.id)
+        await self.room.fire(self.player_no)
     
     async def handle_update_event(self, data):
-        await self.room.update_cursor_position(self.id, float(data['x']), float(data['y']))
-    
-    async def on_calibration_complete(self):        
+        await self.room.update_cursor_position(self.player_no, float(data['x']), float(data['y']))
+
+    async def on_calibration_complete(self):
         await self.websocket.send_text(json.dumps({"type": "calibration_complete"}))
 
     async def update(self):
@@ -241,30 +255,31 @@ class MobileClient(Client):
 class ComputerClient(Client):
     def __init__(self, websocket, id,room):
         super().__init__(websocket, id, "computer", room)
-    
-    async def handle_fire_event(self, player_id):
-        await self.send_message(json.dumps({"type": "fire", "player_id": player_id}))
-    
-    async def handle_update_event(self, data, player_id):
-        await self.send_message(json.dumps({"type": "update", "player_id": player_id, "x": data['x'], "y": data['y']}))
 
-    async def on_calibration_complete(self, player_id):
-        await self.send_message(json.dumps({"type": "calibration_complete", "player_id": player_id}))
-
-    async def fire(self, player_id):
-        await self.send_message(json.dumps({"type": "fire", "player_id": player_id}))
-        
-    async def new_player_connected(self, player_id):
-        await self.send_message(json.dumps({"type": "new_player", "player_id": player_id}))
-        
-    async def request_calibration(self, new_calibration, player_id):
-        await self.send_message(json.dumps({"type": "request_calibration", "position": new_calibration, "player_id": player_id}))
+    async def handle_fire_event(self, player_no: int):
+        await self.send_message(json.dumps({"type": "fire", "player_no": player_no}))
     
-    async def handle_fire_event(self, player_id):
-        await self.room.hit(player_id)
+    async def handle_update_event(self, data, player_no: int):
+        await self.send_message(json.dumps({"type": "update", "player_no": player_no, "x": data['x'], "y": data['y']}))
+
+    async def on_calibration_complete(self, player_no: int):
+        await self.send_message(json.dumps({"type": "calibration_complete", "player_no": player_no}))
+
+    async def fire(self, player_no: int, bullets: int):
+        await self.send_message(json.dumps({"type": "fire", "player_no": player_no, "bullets": bullets}))
+
+    async def new_player_connected(self, player_no: int):
+        await self.send_message(json.dumps({"type": "new_player", "player_no": player_no}))
+        await self.request_calibration(self.room.current_calibration_position[player_no], player_no)
+
+    async def request_calibration(self, new_calibration, player_no: int):
+        await self.send_message(json.dumps({"type": "request_calibration", "position": new_calibration, "player_no": player_no}))
+
+    async def handle_fire_event(self, player_no: int):
+        await self.room.hit(player_no)
     
     async def update(self):
         data = await self.receive_message()
         data = json.loads(data)
         if data['type'] == "hit":
-            await self.handle_fire_event(data['player_id'])
+            await self.handle_fire_event(data['player_no'])

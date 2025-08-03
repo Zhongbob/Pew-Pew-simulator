@@ -39,7 +39,8 @@ function clearElements() {
     document.querySelectorAll(".bulletshot").forEach(shot => shot.remove());
 }
 
-
+const targetImage = new Image();
+targetImage.src = "/public/assets/target-brown.PNG"; // Ensure the path is correct
 function createTarget(width, height, classname = "") {
     // Find backdrop element
     const backdrop = document.getElementById("backdrop");
@@ -53,7 +54,7 @@ function createTarget(width, height, classname = "") {
     // Creating target
     const targetContainer = document.createElement("div");
     targetContainer.className = "target-container " + classname;
-    const target = document.createElement("img");
+    const target = targetImage;
     if (isDarkMode()) {
         const blinker = document.createElement("div");
         blinker.className = "blinker";
@@ -61,7 +62,6 @@ function createTarget(width, height, classname = "") {
     }
 
     targetContainer.appendChild(target);
-    target.src = "/public/assets/target-brown.PNG";
     target.id = "target"
     target.className = "target toggle";
     targetContainer.style.left = x + 'px';
@@ -133,7 +133,7 @@ function isDarkMode() {
     return toggle && toggle.getAttribute("data-dark") === "true";
 }
 
-function checkHit(element,x,y){
+function checkHitElement(element,x,y){
     const rect = element.getBoundingClientRect();
     const elementLeft = rect.left;
     const elementRight = rect.right;

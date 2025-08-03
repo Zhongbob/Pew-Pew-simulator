@@ -8,17 +8,51 @@ body {
 }
 
 .player1 {
-    color: blue;
-
+    color: #4E4EE9;
+    --color: #4E4EE9
 }
 
 .player2 {
-    color: red;
-    transform: translate(-50%, -50%) rotate(45deg) !important;
+    color: #ED3636;
+    --color: #ED3636;
 }
+.cross_horizontal {
+    position:absolute;
+    width: 12px;
+    height:4px;
+    background: var(--color);
+    border-radius: 50%;
+}
+.cross_vertical {
+    position:absolute;
+    width: 4px;
+    height:12px;
+    background: var(--color);
+    border-radius: 50%;
+}
+.cross1 {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.cross2 {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.cross3 {
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+}
+.cross4 {
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
 
+}
 .player {
-    display: none;
+    display: flex;
     height: 32px;
     width: 32px;
     position: fixed;
@@ -31,6 +65,7 @@ body {
     text-align: center;
     transform: translate(-50%, -50%);
     z-index: 9999;
+    transition: opacity 0.5s ease-in-out;
 }
 
 @keyframes sway {
@@ -233,13 +268,20 @@ body {
     align-items: center;
 }
 
-#ScreenTarget {
+.screen-target {
+
+    width: 48%;
+    height: 100%;
+}
+
+.screen-target img {
     align-self: flex-start;
     pointer-events: auto;
-    width: 48%;
+    width: 100%;
     height: 100%;
     object-fit: contain;
 }
+
 
 .activated #ets-container {
     transform: translate(-15%, -15%);
@@ -313,4 +355,120 @@ body {
 .accuracy-count{
     font-weight: bold;
     font-size:1.2rem;
+}
+
+.smoke {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    pointer-events: none;
+    transform: translate(-60%, -80%);
+    z-index: 12111;
+}
+
+.bullet{
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 12111;
+}
+
+.hit-dot{
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: red;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.screen-target{
+    position:relative;
+}
+
+.HUD{
+    position: fixed;
+    width: 100vw;
+    left:0;
+    top: 0;
+    padding: 1rem 3rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.gun-display{
+    width:64px;
+    height:64px;
+}
+
+.gun-display img{
+    width:100%;
+    height:100%;
+}   
+
+.player-info {
+    padding: 0.5rem 1rem;
+    padding-bottom:0.8rem;
+    border-radius: 1rem;
+    width:fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 2rem;
+    color:white;
+    background: #4e4ee982;
+    border: 2px solid #4E4EE9;
+    --color: #4E4EE9;
+    position: relative;
+    transition: opacity 0.5s ease-in-out;
+}
+.player1-info {
+    background: #4e4ee982;
+    border: 2px solid #4E4EE9;
+    --color: #4E4EE9;
+}
+
+.player2-info {
+    background: #ED363682;
+    border: 2px solid #ED3636;
+    --color: #ED3636;
+}
+
+.player3-info {
+    background: #36ED3682;
+    border: 2px solid #36ED36;
+    --color: #36ED36;
+}
+
+.player4-info {
+    background: #ede13682;
+    border: 2px solid #dbed36;
+    --color: #dbed36;
+}
+
+.subtext {
+    opacity:0.5
+}
+
+.player-no{
+    color: white;
+    font-size: 1rem;
+    width:fit-content;
+    position:absolute;
+    padding:0.5rem;
+    border-radius: 50%;
+    bottom: -1.2rem;
+    left:0.5rem;
+    opacity: 0.8;
+    font-weight: bold;
+}
+
+.invisible {
+    opacity: 0;
 }

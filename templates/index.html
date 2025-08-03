@@ -9,17 +9,62 @@
 </head>
 
 <body>
-    <style>
-
-    </style>
-    <div class="player1 player">
-        +
+    <div class="HUD">
+        <div class="player1-info player-info invisible">
+            <div class="gun-display">
+                <img src="/public/assets/gun.png">
+            </div>
+            <div class = "bullet-count"><b class="count">30</b> <span class = "subtext">/ INF</span></div>
+            <p class = "player-no">Player 1</p>
+        </div>
+        <div class="player2-info player-info invisible">
+            <div class="gun-display">
+                <img src="/public/assets/gun.png">
+            </div>
+            <div class = "bullet-count"><b class="count">30</b> <span class = "subtext">/ INF</span></div>
+            <p class = "player-no">Player 2</p>
+        </div>
+        <div class="player3-info player-info invisible">
+            <div class="gun-display">
+                <img src="/public/assets/gun.png">
+            </div>
+            <div class = "bullet-count"><b class="count">30</b> <span class = "subtext">/ INF</span></div>
+            <p class = "player-no">Player 3</p>
+        </div>
+        <div class="player4-info player-info invisible">
+            <div class="gun-display">
+                <img src="/public/assets/gun.png">
+            </div>
+            <div class = "bullet-count"><b class="count">30</b> <span class = "subtext">/ INF</span></div>
+            <p class = "player-no">Player 4</p>
+        </div>
     </div>
-    <div class="player2 player">
-        +
+    <div class="player1 player invisible">
+        <div class="cross1 cross_horizontal"></div>
+        <div class="cross2 cross_horizontal"></div>
+        <div class="cross3 cross_vertical"></div>
+        <div class="cross4 cross_vertical"></div>
+    </div>
+    <div class="player2 player invisible">
+        <div class="cross1 cross_horizontal"></div>
+        <div class="cross2 cross_horizontal"></div>
+        <div class="cross3 cross_vertical"></div>
+        <div class="cross4 cross_vertical"></div>
+    </div>
+    <div class="player3 player invisible">
+        <div class="cross1 cross_horizontal"></div>
+        <div class="cross2 cross_horizontal"></div>
+        <div class="cross3 cross_vertical"></div>
+        <div class="cross4 cross_vertical"></div>
+    </div>
+    <div class="player4 player invisible">
+        <div class="cross1 cross_horizontal"></div>
+        <div class="cross2 cross_horizontal"></div>
+        <div class="cross3 cross_vertical"></div>
+        <div class="cross4 cross_vertical"></div>
     </div>
     <button id="toggle" data-dark="false"></button>
-    <div class = "difficulty-container">
+    <div class="difficulty-container">
         <button id="easy" class="difficulty">Easy</button>
         <button id="medium" class="difficulty">Medium</button>
         <button id="marksmen" class="difficulty">Marksman</button>
@@ -31,9 +76,11 @@
         <img class="roof" src="/public/assets/roof.PNG">
         <img class="table" src="/public/assets/table.PNG">
         <div id="ets-container">
-            <img src="/public/assets/ets-monitor.PNG" class = "ets-monitor">
+            <img src="/public/assets/ets-monitor.PNG" class="ets-monitor">
             <div id="etsScreen">
-                <img src="/public/assets/target-bw.PNG" id="ScreenTarget">
+                <div class="screen-target">
+                    <img src="/public/assets/target-bw.PNG" id="ScreenTarget">
+                </div>
                 <div class="accuracy-container hide">
                     <div class="accuracy-count" id="accuracyCount">0/0</div>
                     <div class="accuracy-value" id="accuracyValue">0%</div>

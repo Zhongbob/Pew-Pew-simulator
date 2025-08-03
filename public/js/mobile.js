@@ -1,3 +1,6 @@
+const path = window.location.pathname; 
+const pathSegments = path.split('/');
+const room_id = pathSegments[3]
 const rotations = {
     x: 0,
     y: 0,
@@ -47,7 +50,7 @@ const handleOrientationEvent2 = (event) => {
         y: y
     }));
 }
-const ws = new WebSocket("wss://" + location.host + "/ws?client=mobile");
+const ws = new WebSocket(`wss://${location.host}/mobile/${room_id}/ws`);
 let currentCalibration = "center";
 let startShooting = false;
 ws.onmessage = (event) => {

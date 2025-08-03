@@ -1,12 +1,11 @@
-const ws = new WebSocket("wss://" + location.host + "/ws?client=computer");
-const player1 = document.querySelector(".player1");
-const player2 = document.querySelector(".player2");
+const path = window.location.pathname; 
+const pathSegments = path.split('/');
+const room_id = pathSegments[3]
+const ws = new WebSocket(`wss://${location.host}/computer/${room_id}/ws`);
+const playerCrosshairElements = document.querySelectorAll(".player");
+const playerInfos = document.querySelectorAll(".player-info");
 const playerIds = {
 
-}
-const playerElements = {
-    1: player1,
-    2: player2
 }
 const callibrations = {
     "center": [],
@@ -40,56 +39,39 @@ let currentPosition = {
 }
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    const playerId = data.player_id;
-    const playerNumber = playerIds[playerId];
+    const playerNo = data.player_no;
+    const currentCrossHair = playerCrosshairElements[playerNo - 1];
     if (data.type === "calibration_complete") {
-        const currentElem = playerElements[playerNumber];
-        currentElem.style.left = `${positions["center"]}vw`;
-        currentElem.style.top = `${positions["center"]}vh`;
+        currentCrossHair.style.left = `${positions["center"]}vw`;
+        currentCrossHair.style.top = `${positions["center"]}vh`;
         // currentElem.style.display = "none";
 
     } else if (data.type === "update") {
         let { x, y } = data;
-        currentPosition[playerNumber] = { x, y };
-        const currentElement = playerElements[playerNumber];
-        if (currentElement) {
-            currentElement.style.left = `${x}vw`;
-            currentElement.style.top = `${y}vh`;
+        currentPosition[playerNo] = { x, y };
+        if (currentCrossHair) {
+            currentCrossHair.style.left = `${x}vw`;
+            currentCrossHair.style.top = `${y}vh`;
         }
     } else if (data.type === "request_calibration") {
-        currentCalibrations[playerId] = data.position;
-        const currentElement = playerElements[playerNumber];
-        currentElement.style.left = `${positions[data.position]}vw`;
-        currentElement.style.top = `${positions[data.position]}vh`;
+        currentCalibrations[playerNo] = data.position;
+        currentCrossHair.style.left = `${positions[data.position]}vw`;
+        currentCrossHair.style.top = `${positions[data.position]}vh`;
     }
     else if (data.type === "fire") {
-        const currentPlayer = playerElements[playerNumber];
-        const cloned_cross = currentPlayer.cloneNode();
-        cloned_cross.style.width = "12px";
-        cloned_cross.style.height = "12px";
-        cloned_cross.style.color = "#ff0000";
-        document.body.appendChild(cloned_cross);
-        const prevColor = playerColors[playerNumber];
-        currentPlayer.style.color = "#ff0000";
-        shoot(currentPosition[playerNumber].x, currentPosition[playerNumber].y, playerId);
-        setTimeout(() => {
-            currentPlayer.style.color = prevColor;
-        }, 500);
+        shoot(currentPosition[playerNo].x, currentPosition[playerNo].y, playerNo);
     }
     else if (data.type === "new_player") {
-        const playerId = data.player_id;
-        const currentPlayerCount = Object.keys(playerIds).length + 1;
-        playerIds[playerId] = currentPlayerCount;
-        const newPlayerElement = playerElements[currentPlayerCount];
-        newPlayerElement.style.display = "flex";
+        currentCrossHair.classList.remove("invisible");
+        playerInfos[playerNo - 1].classList.remove("invisible");
     }
 
 };
 
-function hit(playerId){
+function hit(playerNo){
     ws.send(JSON.stringify({
         type: "hit",
-        player_id: playerId
+        player_no: playerNo
     }));
 }
 function sendData(data) {
