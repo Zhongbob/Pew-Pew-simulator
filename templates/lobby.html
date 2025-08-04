@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Join Game</title>
+  <link rel="stylesheet" href="/public/css/home.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public/css/lobby.css" />
+</head>
+
+<body>
+  <section class="header">
+    <nav>
+      <a href="index.html">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8q8De3gU3-A9YxRr6s7pRrD0QflRZXC6ZAA&s"
+          alt="Logo" class="logo">
+      </a>
+      <ul>
+        <li><a href="/">HOME</a></li>
+        <li><a href="/rules">RULES</a></li>
+        <li><a href="/play">PLAY</a></li>
+      </ul>
+    </nav>
+  </section>
+  <div class="container">
+    <p class="error" id = "error">
+    </p>
+    <div class = "room-details">
+      <h1>Join a Room</h1>
+      <input type="text" id="clientIdInput" placeholder="Enter Client ID">
+      <a class="option action-button" href="https://codepen.io/yourusername/pen/xyz456">Join Room</a>
+    </div>
+    <div  class = "room-details">
+      <h2>Create new Room</h2>
+      <div class="gamemode-row">
+        <button class="option" id="freeplayBtn">Freeplay</button>
+        <button class="option" id="survivalBtn">Survival</button>
+      </div>
+      <a class="option create action-button">Create Room</a>
+    </div>
+  </div>
+  <script src = "/public/js/joingame.js"></script>
+</body>
+
+</html>

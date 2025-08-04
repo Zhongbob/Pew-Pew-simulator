@@ -8,6 +8,9 @@ from fastapi.responses import RedirectResponse
 import uvicorn
 from Room import Room
 app = FastAPI()
+rooms = {
+    1:Room(1)
+}
 
 # Setup templates folder
 templates = Jinja2Templates(directory="templates")
@@ -20,7 +23,7 @@ async def get(request: Request):
 @app.get("/room/computer/{room_id}", response_class=HTMLResponse)
 async def get(request: Request, room_id:int):    
     if room_id in rooms:        
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse("computer.html", {"request": request})
     else:
         return RedirectResponse(url='/create_room')
 
@@ -33,10 +36,15 @@ async def get_mobile(request: Request, room_id:int):
 
 @app.post("/create_room")
 async def create_room(request:Request):
+    room_type = (await request.json()).get("room_type")
+    if not room_type:
+        return {"error": "Room type is required"}
+    if room_type not in ["freeplay", "survival"]:
+        return {"error": "Invalid room type"}
     id = random.randint(10000,99999)
     while id in rooms:
         id = random.randint(10000,99999)
-    rooms[id] = Room(id)
+    rooms[id] = Room(id,room_type)
     return RedirectResponse(url='/room/{}'.format(id))
 
 @app.get("/room/{room_id}")
@@ -47,12 +55,14 @@ async def get_room_id(request:Request,room_id:int):
     else:
         return RedirectResponse(url='/room/computer/{}'.format(room_id))
         
-        
+@app.get("/rules", response_class=HTMLResponse)
+async def get_rules(request: Request):
+    return templates.TemplateResponse("rules.html", {"request": request})
 
-room = Room(1)
-rooms = {
-    1:Room(1)
-}
+@app.get("/lobby", response_class=HTMLResponse)
+async def get_lobby(request: Request):
+    return templates.TemplateResponse("lobby.html", {"request": request})
+
 @app.websocket("/mobile/{room_id}/ws")
 async def mobile_websocket_endpoint(websocket: WebSocket, room_id:int):
     # get the string parameters from the websocket url parameters
