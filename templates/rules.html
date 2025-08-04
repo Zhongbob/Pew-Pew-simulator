@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rules</title>
+  <link rel="stylesheet" href="/public/css/home.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .header {
+      min-height: 100vh;
+      width: 100%;
+      background: none;
+      position: relative;
+    }
+    .text-box {
+      background: rgba(20, 20, 20, 0.85);
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 600px;
+      margin: 80px auto 0 auto;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.7);
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+    }
+    details {
+      background: #111;
+      border-radius: 8px;
+      margin: 16px 0;
+      padding: 18px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    details[open] {
+      background: #222;
+    }
+    summary {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      outline: none;
+    }
+    p, li {
+      font-size: 1rem;
+      color: #ccc;
+      text-align: left;
+    }
+    ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+    nav ul li a {
+      color: #fff;
+      transition: color 0.2s;
+    }
+    nav ul li a:hover {
+      color: #00ffe7;
+    }
+  </style>
+</head>
+<body>
+  <section class="header">
+    <nav>
+  <a href="/">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8q8De3gU3-A9YxRr6s7pRrD0QflRZXC6ZAA&s" alt="Logo" class="logo">
+  </a>
+  <ul>
+    <li><a href="/">HOME</a></li>
+    <li><a href="/rules">RULES</a></li>
+    <li><a href="/play">PLAY</a></li>
+  </ul>
+</nav>
+    <div class="text-box">
+      <h1>Game Rules</h1>
+      <details>
+        <summary>Getting Started</summary>
+        <ul>
+          <li>There are two gamemodes, freeplay and survival</li>
+          <li>Freeplay involves players shooting targets that appear on the screen.</li>
+          <li>Survival involves players shooting enemies that appear on the screen before they approach the player.</li>
+          <li>Players need at least one computer and a phone to play the game. Create/Join a room in the top right to start.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Calibration</summary>
+        <ul>
+          <li>Each mobile client acts as a gun.</li>
+          <li>A calibration screen will appear for either gamemode.</li>
+          <li>Shoot at the crosshair to calibrate your device.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Gameplay</summary>
+        <ul>
+          <li>The mobile device acts as a gun controller.</li>
+          <li>Each Magazine contains 30 rounds. After 30 rounds, the gun will need to be reloaded.</li>
+          <li>To fire a shot, the player needs to disengage the safety, load a magazine, and cock the weapon</li>
+          <li>Firing the weapon has a chance for it to jam, and the player will need to perform the corresponding Immediate Action (IA) drills to remedy it</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Gameplay (Freeplay)</summary>
+        <ul>
+          <li>There are 3 difficulties in freeplay. Choose the one you are comfortable with</li>
+          <li>There is also a night mode in freeplay which will make shooting marginally more difficult.</li>
+          <li>See you accuracy at the bottom right corner of your screen</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Gameplay (Survival)</summary>
+        <ul>
+          <li>In survival mode, players must work together to fend off waves of enemies.</li>
+          <li>Eliminating 20 normal enemies will trigger a boss wave</li>
+          <li>Eliminating a boss will increase the frequency of enemy spawns</li>
+        </ul>
+      </details>
+      <p style="margin-top:32px;">Click each section to view more details. Good luck and have fun!</p>
+    </div>
+  </section>
+</body>
+</html>
