@@ -1,17 +1,36 @@
 import random
+import threading, time
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 import uvicorn
-from Room import Room
-app = FastAPI()
+from Room import Room, clear_old_rooms,rooms,clear_old_rooms
+from contextlib import asynccontextmanager
+
+def periodic_clear_room():
+    while True:
+        print("Clearing old rooms...")
+        clear_old_rooms()
+        time.sleep(300)
+        
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start background thread on startup
+    thread = threading.Thread(target=periodic_clear_room, daemon=True)
+    thread.start()
+    yield  # Application runs here
+    
+app = FastAPI(lifespan=lifespan)
+
 
 # Setup templates folder
 templates = Jinja2Templates(directory="templates")
 static = StaticFiles(directory="public", html=True)
 app.mount("/public", static)
+
+    
 @app.get("/", response_class=HTMLResponse)
 async def get(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -22,24 +41,29 @@ async def get(request: Request, room_id:int):
         room = rooms[room_id]
         if room.game_type == "survival":
             return templates.TemplateResponse("survival.html", {"request": request, "room_id": room_id})
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse("freeplay.html", {"request": request})
     else:
-        return RedirectResponse(url='/create_room')
+        return RedirectResponse(url='/lobby?error=Room does not exist')
 
 @app.get("/room/mobile/{room_id}", response_class=HTMLResponse)
 async def get_mobile(request: Request, room_id:int):
     if room_id in rooms:        
         return templates.TemplateResponse("mobile.html", {"request": request})
     else:
-        return RedirectResponse(url='/create_room')
+        return RedirectResponse(url='/lobby?error=Room does not exist')
 
 @app.post("/create_room")
 async def create_room(request:Request):
+    room_type = (await request.json()).get("room_type")
+    if not room_type:
+        return {"error": "Room type is required"}
+    if room_type not in ["freeplay", "survival"]:
+        return {"error": "Invalid room type"}
     id = random.randint(10000,99999)
     while id in rooms:
         id = random.randint(10000,99999)
-    rooms[id] = Room(id)
-    return RedirectResponse(url='/room/{}'.format(id))
+    rooms[id] = Room(id,room_type)
+    return {"room_id": id}
 
 @app.get("/room/{room_id}")
 async def get_room_id(request:Request,room_id:int):
@@ -49,13 +73,16 @@ async def get_room_id(request:Request,room_id:int):
     else:
         return RedirectResponse(url='/room/computer/{}'.format(room_id))
         
-        
 
-room = Room(1)
-rooms = {
-    1:Room(1),
-    2:Room(2, "survival"),
-}
+@app.get("/rules", response_class=HTMLResponse)
+async def get_rules(request: Request):
+    return templates.TemplateResponse("rules.html", {"request": request})
+
+@app.get("/lobby", response_class=HTMLResponse)
+async def get_lobby(request: Request):
+    error = request.query_params.get("error", "")
+    return templates.TemplateResponse("lobby.html", {"request": request, "error": error})
+
 @app.websocket("/mobile/{room_id}/ws")
 async def mobile_websocket_endpoint(websocket: WebSocket, room_id:int):
     # get the string parameters from the websocket url parameters

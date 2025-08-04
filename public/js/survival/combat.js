@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { scene, camera } from './main.js';
-import { stopSpawnZombies, clickableObjects, removeClickableObject, zombies, boss, getSpawnersLoc, killBoss } from './zombie.js';
+import { stopSpawnZombies, clickableObjects, removeClickableObject, zombies, boss, getSpawnersLoc, killBoss, spawnZombiesInterval } from './zombie.js';
 
 
 
@@ -15,7 +15,11 @@ export function displayClickables(){
 
 
 export function win(){
-    stopSpawnZombies();
+    window.bossSpawned = false; // Reset boss spawn state
+    window.waveCount++; // Increment wave count
+    updateWaveCountDisplay();
+    spawnZombiesInterval();
+
 }
 
 export function checkDie(){
@@ -35,16 +39,29 @@ export function checkDie(){
 
 
 function updateKillCounter(){
+    const deathSound = new Audio('/public/sounds/ghost_die.mp3');
+    deathSound.volume = 0.5; // Set volume to 50%
+    deathSound.play();
     const counter = document.getElementById("ghostkilled");
     counter.textContent ++; 
 }
 
 
 export function updatehealth(value){
+    if (value < 0 ){
+        const sound = new Audio('/public/sounds/damage_taken.mp3');
+        sound.volume = 0.5; // Set volume to 50%
+        sound.play();
+    }
     const hp = document.getElementById("hp");
     let currentHP = parseInt(hp.textContent);
     currentHP += value;
     hp.textContent = currentHP;
+}
+
+function updateWaveCountDisplay() {
+    const waveNumberElement = document.getElementById("wave-number");
+    waveNumberElement.textContent = window.waveCount + 1; // Display current wave (1-indexed)
 }
 
 /**
