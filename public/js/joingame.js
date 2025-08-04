@@ -5,6 +5,8 @@ const freeplayBtn = document.getElementById('freeplayBtn');
 const survivalBtn = document.getElementById('survivalBtn');
 const createRoomBtn = document.querySelector('.create');
 const error = document.getElementById('error');
+const roomIdInput = document.getElementById('clientIdInput');
+const joinRoomBtn = document.querySelector('.join');
 let roomType = null; // Default room type
 freeplayBtn.addEventListener('click', () => {
   roomType = 'freeplay';
@@ -41,11 +43,21 @@ createRoomBtn.addEventListener('click', (event) => {
     if (data.error) {
       error.textContent = data.error;
     } else {
-      window.location.href = `/room/${data.id}`;
+      window.location.href = `/room/${data.room_id}`;
     }
   })
   .catch(error => {
     console.error('There was a problem with the fetch operation:', error);
     error.textContent = "An error occurred while creating the room.";
   });
+})
+
+joinRoomBtn.addEventListener('click', (event) => {
+  event.preventDefault();
+  const roomId = roomIdInput.value.trim();
+  if (!roomId) {
+    error.textContent = "Please enter a Room ID.";
+    return;
+  }
+  window.location.href = `/room/${roomId}`;
 })

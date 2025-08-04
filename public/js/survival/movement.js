@@ -1,6 +1,7 @@
 // Controls
 import { camera, clock } from "./main.js";
 
+const walkingSound = new Audio('/public/sounds/walking.mp3');
 const keysPressed = {
     1: { w: false, a: false, s: false, d: false },
     2: { w: false, a: false, s: false, d: false },
@@ -46,9 +47,11 @@ export function handleMovement(camera, clock){
 
     // Forward / backward
     if (anyKeyPressedEach.w || anyKeyPressedEach.s) {
+        walkingSound.play();
         camera.position.y = 0.12 + Math.sin(delta * 30) * 0.01; // bobbing
     } else {
         camera.position.y = 0.12; // reset when not moving forward/backward
+        walkingSound.pause();
     }   
     if (anyKeyPressedEach.w) {
         camera.position.x -= Math.sin(angle) * walkSpeed;

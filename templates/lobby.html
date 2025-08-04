@@ -14,24 +14,25 @@
 <body>
   <section class="header">
     <nav>
-      <a href="index.html">
+      <a href="/">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8q8De3gU3-A9YxRr6s7pRrD0QflRZXC6ZAA&s"
           alt="Logo" class="logo">
       </a>
       <ul>
         <li><a href="/">HOME</a></li>
         <li><a href="/rules">RULES</a></li>
-        <li><a href="/play">PLAY</a></li>
+        <li><a href="/lobby">PLAY</a></li>
       </ul>
     </nav>
   </section>
   <div class="container">
     <p class="error" id = "error">
+      {{error}}
     </p>
     <div class = "room-details">
       <h1>Join a Room</h1>
-      <input type="text" id="clientIdInput" placeholder="Enter Client ID">
-      <a class="option action-button" href="https://codepen.io/yourusername/pen/xyz456">Join Room</a>
+      <input type="number" id="clientIdInput" placeholder="Enter Room ID">
+      <a class="option action-button join">Join Room</a>
     </div>
     <div  class = "room-details">
       <h2>Create new Room</h2>

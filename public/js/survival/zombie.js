@@ -3,7 +3,7 @@ import { scene, camera } from './main.js';
 import { updatehealth } from "./combat.js";
 
 const GLTFloader = new GLTFLoader();
-
+window.waveCount = 0; // Track the number of waves
 
 // Spawners logic
 const spawners = [];
@@ -66,6 +66,8 @@ function loadZombie(point, selectedModel) {
 export function spawnZombies(type){
     const arr = getSpawnersLoc();
     if (type === "grim_reaper"){
+        const sound = new Audio('/public/sounds/boss_spawn.mp3');
+        sound.play();
         const randomSpawnerPoint = arr[Math.floor(Math.random() * arr.length)];
         loadZombie(randomSpawnerPoint, type);
 
@@ -77,17 +79,23 @@ export function spawnZombies(type){
     }
 }
 
-let intervalId = null; 
-export function spawnZombiesInterval(interval){
-    intervalId = setInterval(() => {
-        spawnZombies("ghost");
-    }, interval);
+let timeOutId = null; 
+export function spawnZombiesInterval(){
+    let currentCooldown = 7000 - (window.waveCount * 1000); // Decrease cooldown with each wave
+    if (currentCooldown < 1000) currentCooldown = 3000; // Minimum cooldown of 3 seconds
+    function spawnZombieEvent() {
+        timeOutId = setTimeout(() => {
+            spawnZombies("ghost");
+            spawnZombieEvent();
+        }, currentCooldown + (Math.random() -0.5)* 1000); // Add some randomness to the spawn time
+    }
+    spawnZombieEvent();
 
 }
 
 export function stopSpawnZombies(){
-    clearInterval(intervalId);
-    intervalId = null; 
+    clearTimeout(timeOutId);
+    timeOutId = null; 
 }
 
 function followCamera(follower, followSpeed = 0.004) {
@@ -177,8 +185,9 @@ export function spawnBossZombie() {
 
     if (!counter) return; // safety check
     const kills = parseInt(counter.textContent);
+    let requiredKills = 20;
 
-    if (kills >= 10 && !window.bossSpawned) {
+    if (kills - waveCount * 20 >= requiredKills && !window.bossSpawned) {
         window.bossSpawned = true;
         console.log("Boss spawning");
         stopSpawnZombies(); 
@@ -193,6 +202,8 @@ export function spawnBossZombie() {
 
 
 function loadBoss(point, selectedModel){
+    const sound = new Audio('/public/sounds/boss_spawn.mp3');
+    sound.play();
     GLTFloader.load(`/public/assets/survival/${selectedModel}.glb`, function (gltf) {
         const baseModel = gltf.scene;
         boss = baseModel.clone(true);

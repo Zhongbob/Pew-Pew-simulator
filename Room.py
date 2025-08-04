@@ -4,13 +4,26 @@ from utils import calculate_median, angle_difference
 from fastapi.websockets import WebSocketDisconnect
 import math 
 from uuid import uuid4
+import time
+
+
 next_calibration = {
     "center": "left",
     "left": "right",
     "right": None
 }
+def clear_old_rooms():
+    """
+    Clears rooms that have not been updated for more than 5 minutes.
+    """
+    current_time = time.time()
+    for room_id, room in list(rooms.items()):
+        if room.should_clear(current_time):
+            del rooms[room_id]
+            print(f"Room {room_id} has been cleared.")
+
 class Room:
-    def __init__(self, room_id : int, game_type: str = "freeplay"):
+    def __init__(self, room_id : int, game_type: str = "freeplay", permanent: bool = False):
         self.room_id = room_id
         self.computer_client: ComputerClient = None
         self.mobile_clients: dict[int, MobileClient] = {}
@@ -30,7 +43,19 @@ class Room:
 
         }
         self.game_type = game_type  # "freeplay" or "survival" 
+        self.last_updated = time.time()  # Track the last time any client has left
+        self.permanent = permanent  # If the room is permanent, it will not be cleared
 
+    def should_clear(self, current_time):
+        """
+        Determines if the room should be cleared based on the last updated time and whether it is permanent.
+        """
+        if self.permanent:
+            return False
+        if self.computer_client or len(self.mobile_clients) > 0:
+            return False
+        return (current_time - self.last_updated) > 300  # 5 minutes
+    
     async def set_computer_client(self, websocket):
         uuid = str(uuid4())
         if (self.computer_client is not None):
@@ -72,6 +97,7 @@ class Room:
         return new_mobile
     
     def remove_client(self, client):
+        self.last_updated = time.time()  # Update the last updated time
         if isinstance(client, MobileClient):
             self.remove_mobile_client(client)
         elif isinstance(client, ComputerClient):
@@ -80,6 +106,7 @@ class Room:
             print(f"Unknown client type: {type(client)}")
         
     def remove_mobile_client(self, client):
+        self.last_updated = time.time()  # Update the last updated time
         if client.player_no not in self.mobile_clients:
             print(f"Mobile client with player_no {client.player_no} not found.")
             return
@@ -219,7 +246,11 @@ class Room:
         await self.mobile_clients[player_no].handle_hit_event()
 
             
-        
+rooms = {
+    1:Room(1, permanent=True),
+    2:Room(2,"survival", permanent=True),
+}
+      
 class Client:
     def __init__(self, websocket, id, client_type, room: Room):
         self.websocket = websocket
