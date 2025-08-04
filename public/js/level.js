@@ -1,6 +1,5 @@
 let totalShots = 0;
 let shotsHit = 0;
-let started = false;
 let currentInterval = null;
 function recordShot() {
     totalShots++;

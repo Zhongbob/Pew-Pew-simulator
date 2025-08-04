@@ -125,6 +125,8 @@ function slideInElements() {
     });
 }
 
+window.globalStartLevel = slideInElements
+
 function loadStartingEnv() {
     // Prevent page scroll
     document.body.style.margin = "0";
