@@ -4,67 +4,143 @@ body {
 }
 
 /*Handle*/
-.handle-container {
-  width: 500px;
+input#handle[type=range] {
+  width: 300px;
+  height: 30px;
+  background: transparent; /* Remove default background */
+  -webkit-appearance: none;
+  pointer-events: none;
 }
-#speedHandle {
-  margin-top: 20px;
-  font-weight: bold;
+input#handle[type=range]::-webkit-slider-runnable-track {
+  height: 40px; /* height of track */
+  background: #ccc;
+  border-radius: 6px; /* round edges */
+  pointer-events: none;
 }
-input[type="range"] {
-  width: 100%;
+input#handle[type=range]::-webkit-slider-thumb {
+  width: 40px;  /* width of thumb */
+  height: 40px; /* height of thumb */
+  background: red;
+  border-radius: 6px; /* makes it circular */
+  cursor: pointer;
+  margin-top: 0px; /* centers the thumb on the track */
+  -webkit-appearance: none;
+  position: relative;
+  pointer-events: auto;
 }
 
 /*Trigger*/
-.trigger-container {
-  width: 200px;
-}
-#speed {
-  margin-top: 20px;
-  font-weight: bold;
-}
-input[type="range"] {
-  width: 100%;
-}
-
-
-/*Type Range*/
-input[type="range"] {
-  width: 100%;
-}
-
-input[type=range] {
+input#trigger[type=range] {
+  width: 150px;
+  background: transparent; /* Remove default background */
+  -webkit-appearance: none;
   pointer-events: none;
 }
-
-input[type=range]::-webkit-slider-thumb {
+input#trigger[type=range]::-webkit-slider-runnable-track {
+  height: 90px; /* height of track */
+  background: #ccc;
+  border-radius: 6px; /* round edges */
+  pointer-events: none;
+}
+input#trigger[type=range]::-webkit-slider-thumb {
+  width: 90px;  /* width of thumb */
+  height: 90px; /* height of thumb */
+  background: red;
+  border-radius: 6px; /* makes it circular */
+  cursor: pointer;
+  margin-top: 0px; /* centers the thumb on the track */
+  -webkit-appearance: none;
+  position: relative;
   pointer-events: auto;
 }
 
-/*For FireFox*/
-input[type=range]::-moz-range-thumb {
-  pointer-events: auto;
+
+/*Bolt*/
+#bolt {
+  position: absolute;
+  width: 500px;
+  height: 50px;
+  top: 300px;
+  left: 500px;
+  border: 2px solid #444;
+  background: grey;
+  overflow: hidden;
 }
 
-input[type=range]::-moz-range-track {
-  pointer-events: none;
+#barrelCover {
+  position: absolute;
+  width: 500px;
+  height: 50px;
+  background: black;
+  overflow: hidden;
 }
 
 #fire {
   font-size: 48px;
   margin-top: 20px;
   display: none;
+  position: absolute;
+  top: 200px;
+  left: 600px;
+
 }
 
+/*Positions*/
 
-#shoot{
-  font-size: 128px !important;
-  padding: 10px 20px;
-  width:100vw;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display:block;
+#handle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+#trigger {
+  position: absolute;
+  top: 200px;
+  left: 330px;
+}
+
+#resetBtn{
+  position: absolute;
+  top: 50px;
+  left: 400px;
+  white-space: nowrap;
+}
+#safetyBtn{
+  position: absolute;
+  top: 200px;
+  left: 500px;
+  width: 90px;
+  height: 90px;
+  white-space: nowrap;
+}
+#fullscreenBtn{
+  position: absolute;
+  top: 50px;
+  left: 600px;
+  white-space: nowrap;
+}
+#speed{
+  font-weight: bold;
+  position: absolute;
+  top: 30px;
+  left: 400px;
+  white-space: nowrap;
+}
+#speedHandle{
+  font-weight: bold;
+  position: absolute;
+  top: 30px;
+  left: 600px;
+  white-space: nowrap;
+}
+#counter{
+  position: absolute;
+  top: 10px;
+  left: 600px;
+  white-space: nowrap;
+}
+#roundsLeft{
+  position: absolute;
+  top: 10px;
+  left: 400px;
+  white-space: nowrap;
 }
