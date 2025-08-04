@@ -128,6 +128,7 @@ trigger.addEventListener("input", () => {
         roundsLeft.textContent = `Rounds Left: 0 (Disabled)`;
   }
   else if (!safetyOn && parseInt(trigger.value) === parseInt(trigger.min)) {
+    shoot();
     fire.style.display = "block";
     if (!hasFired) {
       fireCount++;
@@ -148,6 +149,7 @@ trigger.addEventListener("input", () => {
 
 //Load New Magazine aka Reset button
 resetBtn.addEventListener("click", () => {
+  reload()
   roundsCount = 30;
   fireCount = 0;
   // counterDisplay.textContent = `Fires: 0`;
