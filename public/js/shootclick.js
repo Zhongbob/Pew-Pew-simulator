@@ -94,6 +94,8 @@ function shoot(x, y, playerId){
   updateAccuracy();
   recordShot();
 }
+
+window.globalShoot = shoot;
 document.addEventListener('click', (event) => {
   shoot(event.clientX*100/window.innerWidth, event.clientY*100/window.innerHeight);
 });

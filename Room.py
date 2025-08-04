@@ -10,7 +10,7 @@ next_calibration = {
     "right": None
 }
 class Room:
-    def __init__(self, room_id : int):
+    def __init__(self, room_id : int, game_type: str = "freeplay"):
         self.room_id = room_id
         self.computer_client: ComputerClient = None
         self.mobile_clients: dict[int, MobileClient] = {}
@@ -29,6 +29,7 @@ class Room:
         self.current_calibration_position = {
 
         }
+        self.game_type = game_type  # "freeplay" or "survival" 
 
     async def set_computer_client(self, websocket):
         uuid = str(uuid4())
@@ -39,7 +40,8 @@ class Room:
         new_computer = ComputerClient(websocket, uuid, self)
         self.computer_client = new_computer
         for player_no in self.mobile_clients.keys():
-            already_calibrated = player_no in self.calibrations_final
+            print(self.current_calibration_position)
+            already_calibrated = player_no in self.current_calibration_position and self.current_calibration_position[player_no] is None
             await new_computer.new_player_connected(player_no, already_calibrated)
             if not already_calibrated:
                 await new_computer.request_calibration(self.current_calibration_position[player_no], player_no)
@@ -307,6 +309,8 @@ class ComputerClient(Client):
         await self.request_calibration(self.room.current_calibration_position[player_no], player_no)
 
     async def request_calibration(self, new_calibration, player_no: int):
+        if new_calibration == None: 
+            return
         await self.send_message(json.dumps({"type": "request_calibration", "position": new_calibration, "player_no": player_no}))
 
     async def handle_hit_event(self, player_no: int):
