@@ -3,7 +3,7 @@
   <head>
     <title>Trigger Mechanism</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/public/css/styles.css">
+    <link rel="stylesheet" href="/public/css/mobileui.css">
   </head>
   <body>
     <div class="handle-container">
@@ -13,9 +13,9 @@
     </div>
     <br>
   
-<!--     <div id="bolt">
+    <div id="bolt">
       <div id="barrelCover"></div>
-    </div> -->
+    </div>
 
     <div class="trigger-container">
       <input type="range" id="trigger" min="0" max="100" value="100">
@@ -23,14 +23,16 @@
       <div id="fire">🔥</div>
     </div>
   
-    <div id="counter">Fired: 0</div>
-    <div id="roundsLeft">Rounds Left: 0</div>
+<!--     <div id="counter">Fired: 0</div> -->
+    <div id="roundsLeft">Rounds Left: 30</div>
     <button id="resetBtn">Load New Magazine</button>
 
     <button id="safetyBtn">Safety On</button>
     
       <button id="fullscreenBtn" onclick="toggleFullscreen()">Enter Fullscreen</button>
-    <script src="/public/js/mobile.js"></script>
-    <script src="/public/js/scripts.js"></script>
+    
+    <button id="lastRoundCatch">Last Round Catch</button>
+
+    <script src="/public/js/mobileui.js"></script>
   </body>
 </html>
