@@ -187,6 +187,7 @@ trigger.addEventListener("input", () => {
 
   if (!safetyOn && parseInt(trigger.value) === parseInt(trigger.min)) {
     fire.style.display = "block";
+    shoot()
     if (!hasFired) {
       if (Math.random() < 0.1) {
         iaSound();
@@ -245,6 +246,7 @@ resetBtn.addEventListener("click", () => {
   fireCount = 0;
   // counterDisplay.textContent = `Fires: 0`;
   roundsLeft.textContent = `Rounds Left: 30`;
+  reload()
   resetSlider(trigger);
   handleUnlocked = false;
   trigger.disabled = true;
