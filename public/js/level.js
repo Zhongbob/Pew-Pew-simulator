@@ -1,12 +1,32 @@
-let totalShots = 0;
-let shotsHit = 0;
+const accuracies = {
+    1: {
+        total: 0,
+        hits: 0
+    },
+    2: {
+        total: 0,
+        hits: 0
+    },
+    3: {
+        total: 0,
+        hits: 0
+    },
+    4: {
+        total: 0,
+        hits: 0
+    }
+}
 let currentInterval = null;
-function recordShot() {
-    totalShots++;
+function recordShot(playerNo) {
+    if (accuracies[playerNo]) {
+        accuracies[playerNo].total++;
+    }
 }
 
-function recordShotHit() {
-    shotsHit++;
+function recordShotHit(playerNo) {
+    if (accuracies[playerNo]) {
+        accuracies[playerNo].hits++;
+    }
 }
 
 function resetStats() {
@@ -14,8 +34,11 @@ function resetStats() {
     if (accuracyContainer) {
         accuracyContainer.classList.remove("hide");
     }
-    totalShots = 0;
-    shotsHit = 0;
+    Object.keys(accuracies).forEach(key => {
+        accuracies[key].total = 0;
+        accuracies[key].hits = 0;
+    });
+    updateAccuracy();
 }
 
 function calcAccuracy() {
@@ -24,12 +47,17 @@ function calcAccuracy() {
 }
 
 function updateAccuracy() {
-    const currentPercent = document.getElementById("accuracyValue");
-    const currentCount = document.getElementById("accuracyCount");
-    currentCount.textContent = `${shotsHit}/${totalShots}`;
-    const percentage = calcAccuracy();
+    const accCounts = document.querySelectorAll(".accuracy-count");
+    accCounts.forEach((accCount, index) => {
+        const playerIndex = index + 1;
+        const accuracy = accuracies[playerIndex];
+        if (accuracy) {
+            accCount.textContent = `${accuracy.hits}/${accuracy.total}`;
+        } else {
+            accCount.textContent = "0/0";
+        }
+    });
 
-    currentPercent.textContent = `${percentage}`;
 }
 
 function clearElements() {
@@ -156,3 +184,5 @@ Array.from(difficultyButtons).forEach(button => {
         startLevel(mode);
     });
 });
+
+

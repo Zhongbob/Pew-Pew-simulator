@@ -10,6 +10,9 @@
 </head>
 
 <body>
+    <div class = "room-id">
+        <h1>Room ID: <span id="room-id">{{room_id}}</span></h1>
+    </div>
     <div class="waiting" data-state = "waiting">
         <h1 class="text-1 blink">Waiting for players to join...</h1>
         <h1 class="text-2">Calibrate by aiming at the crosshair</h1>
@@ -88,9 +91,10 @@
                     <img src="/public/assets/target-bw.PNG" id="ScreenTarget">
                 </div>
                 <div class="accuracy-container hide">
-                    <div class="accuracy-count" id="accuracyCount">0/0</div>
-                    <div class="accuracy-value" id="accuracyValue">0%</div>
-
+                    <div class="accuracy-count p1-acc" id="accuracyCount">0/0</div>
+                    <div class="accuracy-count p2-acc" id="accuracyCount">0/0</div>
+                    <div class="accuracy-count p3-acc" id="accuracyCount">0/0</div>
+                    <div class="accuracy-count p4-acc" id="accuracyCount">0/0</div>
                 </div>
             </div>
         </div>

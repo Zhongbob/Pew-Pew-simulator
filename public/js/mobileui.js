@@ -9,15 +9,33 @@ const roundsLeft = document.getElementById("roundsLeft");
 const barrelCover = document.getElementById('barrelCover');
 // const distValue = document.getElementById('distValue');
 const lastRoundCatch = document.getElementById('lastRoundCatch');
+const jamFixBtn = document.getElementById("jamFixBtn");
+const accYDisplay = document.getElementById("accY"); // Motion debug display
 
+const guncock = new Audio('/public/sounds/gun_cock.mp3');
+const ia = new Audio('/public/sounds/empty_gun.mp3');
 //Functions
+function guncockSound() {
+  guncock.currentTime = 0; // rewind to start if needed
+  guncock.play();
+}
+function iaSound() {
+  ia.currentTime = 0; // rewind to start if needed
+  ia.play();
+}
+
 let roundsCount = 30;
 function updateRounds() {
   if (roundsCount > 0) {
-    roundsCount--;
+    if (startShooting){
+      roundsCount--;
+    }
+    
     roundsLeft.textContent = `Rounds Left: ${roundsCount}`;
-  } else {
-    roundsLeft.textContent = `Rounds Left: ${roundsCount}`;
+  } 
+  else {
+    iaSound();
+    roundsLeft.textContent = 'Rounds Left: 0 (Disabled)';
   }
 }
 
@@ -43,19 +61,6 @@ function setupSliderSpeed(sliderID, speedID) {
   });
 }
 
-let lastCatch = false;                            
-lastRoundCatch.addEventListener('click', () => {
-  lastCatch = !lastCatch; // flip the boolean
-  lastRoundCatch.textContent = `lastCatch: ${lastCatch.toString().toUpperCase()}`;
-  lastRoundCatch.style.backgroundColor = lastCatch ? 'green' : 'red';
-  if (lastCatch && handle.value === handle.min){
-    handle.disabled = true;
-  }
-  else{
-    handle.disabled = false;
-  }
-});
-
 function resetSlider(slider) {
   // Optional lock if it's handle at min and not caught before
   if (slider.id === 'handle' && lastCatch && slider.value === slider.min) {
@@ -67,7 +72,6 @@ function resetSlider(slider) {
     slider.value = slider.max;
   }
 }
-
 
 function updateBoltPosition() {
   const dist = parseInt(handle.value);
@@ -104,6 +108,48 @@ function toggleFullscreen() {
   }
 }
 
+// Only add listener when jammed
+function handleMotion(event) {
+  const acc = event.accelerationIncludingGravity;
+  if (!acc) return;
+  const y = acc.y.toFixed(2);
+  accYDisplay.textContent = y; // Display live value
+
+  if (isJammed && acc.y > 5) {
+    clearJam();
+  }
+}
+
+function clearJam() {
+  isJammed = false;
+  trigger.disabled = false;
+  trigger.value = trigger.max;
+  handle.max = 0;
+  gear.style.display = "none";
+  window.removeEventListener("devicemotion", handleMotion);
+}
+
+function requestMotionPermission(whenGrantedCallback) {
+  if (typeof DeviceMotionEvent?.requestPermission === 'function') {
+    DeviceMotionEvent.requestPermission()
+      .then(state => {
+        if (state === 'granted') {
+          if (typeof whenGrantedCallback === 'function') {
+            whenGrantedCallback();
+          }
+        } else {
+          console.warn("Motion permission denied.");
+        }
+      })
+      .catch(console.error);
+  } else {
+    // Android / other browsers
+    if (typeof whenGrantedCallback === 'function') {
+      whenGrantedCallback();
+    }
+  }
+}
+
 // Safety button
 let safetyOn = true;
 let handleUnlocked = false;
@@ -118,42 +164,83 @@ safetyBtn.addEventListener("click", () => {
 // Initially disable trigger
 trigger.disabled = true;
 handle.addEventListener("input", () => {
-  if ((!handleUnlocked && parseInt(handle.value) === parseInt(handle.min)) && !safetyOn) {
-    //If handle is pulled back
-    trigger.disabled = false;
-    handleUnlocked = true; // prevent re-enabling or repeating logic
-    console.log("Trigger enabled after handle reached min.");
-  }
-  else if (handleUnlocked === true && parseInt(handle.value) === parseInt(handle.min)) {
-    roundsCount --;
-  }
+    if (handle.value === handle.min){
+        guncockSound();
+    }
+    if ((!handleUnlocked && parseInt(handle.value) === parseInt(handle.min)) && !safetyOn) {
+        //If handle is pulled back
+        trigger.disabled = false;
+        handleUnlocked = true; // prevent re-enabling or repeating logic
+    }
 });
 
 //Firing Rounds
 let hasFired = false; // To avoid counting the same hold multiple times
 let fireCount = 0;
+let isJammed = false;
+trigger.disabled = true;
+handle.disabled = true;
+
 trigger.addEventListener("input", () => {
-  if (fireCount >= 30) {
-        trigger.disabled = true;
-        roundsLeft.textContent = `Rounds Left: 0 (Disabled)`;
+  // Don't fire if jammed
+  if (isJammed) {
+    fire.style.display = "none";
+    return;
   }
-  else if (!safetyOn && parseInt(trigger.value) === parseInt(trigger.min)) {
+
+  if (!safetyOn && parseInt(trigger.value) === parseInt(trigger.min)) {
     fire.style.display = "block";
+    shoot()
     if (!hasFired) {
+      if (startShooting && Math.random() < 0.03) {
+        iaSound();
+        if (Math.random() < 0.5){
+            isJammed = true;
+            fire.style.display = "none";
+            gear.style.display = "block";
+            trigger.disabled = true;
+            requestMotionPermission(() => {
+            window.addEventListener("devicemotion", handleMotion);
+          });
+        }
+        else{
+            isJammed = true;
+            jamFixBtn.style.display = "block";
+            gear.style.display = "block";
+            fire.style.display = "none";
+            trigger.disabled = true;
+            handle.value = -375;
+            handle.max = -375;
+            updateBoltPosition();
+            return;
+        }
+        return;
+      }
       fireCount++;
       updateRounds();
-      // counterDisplay.textContent = `Fired: ${fireCount}`;
       hasFired = true;
-      if (fireCount >= 30) {
+      if (roundsCount <= 0) {
         trigger.disabled = true;
         roundsLeft.textContent = `Rounds Left: 0 (Disabled)`;
+        barrelCover.style.left = "0px";
+        handle.value = handle.min;
+        updateBoltPosition();
+        handle.disabled = true;
       }
     }
-  } 
-  else {
+  } else {
     fire.style.display = "none";
     hasFired = false;
   }
+});
+
+jamFixBtn.addEventListener("click", () => {
+  isJammed = false;
+  jamFixBtn.style.display = "none";
+  trigger.value = trigger.max;
+  handle.max = 0;
+  updateRounds();
+  gear.style.display = "none";
 });
 
 //Load New Magazine aka Reset button
@@ -162,9 +249,25 @@ resetBtn.addEventListener("click", () => {
   fireCount = 0;
   // counterDisplay.textContent = `Fires: 0`;
   roundsLeft.textContent = `Rounds Left: 30`;
+  reload()
   resetSlider(trigger);
   handleUnlocked = false;
   trigger.disabled = true;
+  handle.disabled = false;
+  requestMotionPermission(); // pre-authorize if not already
+});
+
+//Last Round Catch
+let lastCatch = false;                            
+lastRoundCatch.addEventListener('click', () => {
+  lastCatch = !lastCatch; // flip the boolean
+  lastRoundCatch.style.backgroundColor = lastCatch ? 'green' : 'red';
+  if (!lastCatch) {
+  handle.value = handle.max;
+  updateBoltPosition();
+  }
+  handle.disabled = lastCatch && handle.value === handle.min;
+  trigger.disabled = lastCatch;
 });
 
 trigger.addEventListener("mouseup", () => resetSlider(trigger)); // for mouse

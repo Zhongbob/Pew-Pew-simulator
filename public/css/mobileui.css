@@ -57,14 +57,15 @@ input#trigger[type=range]::-webkit-slider-thumb {
 
 /*Bolt*/
 #bolt {
-  position: absolute;
+  position: relative;
   width: 300px;
   height: 50px;
-  top: 10px;
-  left: 450px;
+  top: -40px;
+  left: 400px;
   border: 2px solid #444;
   background: grey;
   overflow: hidden;
+   z-index: 0;
 }
 
 #barrelCover {
@@ -73,6 +74,20 @@ input#trigger[type=range]::-webkit-slider-thumb {
   height: 50px;
   background: black;
   overflow: hidden;
+  z-index: 2;
+}
+#jamFixBtn{
+  display: none;
+  position: absolute;
+  top: 10px;
+  left: 50px;
+  z-index: 1;
+  width: 70px;
+  height: 30px;
+  background: linear-gradient(to bottom, #ffd700, #a67c00);
+  border: 2px solid black;
+  border-radius: 20% 50% 50% 20% / 40% 60% 60% 40%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 #fire {
@@ -82,7 +97,15 @@ input#trigger[type=range]::-webkit-slider-thumb {
   position: absolute;
   top: 200px;
   left: 600px;
+}
 
+#gear {
+  font-size: 48px;
+  margin-top: 20px;
+  display: none;
+  position: absolute;
+  top: 200px;
+  left: 600px;
 }
 
 /*Positions*/
