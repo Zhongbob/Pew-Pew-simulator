@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>My first three.js app</title>
+    <title>Survival Mode</title>
     <link rel="stylesheet" href="/public/css/survival.css">
     <link rel="stylesheet" href="/public/css/shooter.css">
     <script type="importmap">
@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <div class="waiting" style = "flex-direction: column;" data-state="waiting">
+    <div class="waiting" style="flex-direction: column;" data-state="waiting">
         <h1 class="text-1 blink">Waiting for players to join...</h1>
         <h1 class="text-2">Calibrate by aiming at the crosshair</h1>
         <h1 class="text-3">Calibration Complete! Get ready!</h1>
@@ -56,8 +56,6 @@
             <p class="player-no">Player 4</p>
         </div>
     </div>
-    <div class="forward movement">Forwards</div>
-    <div class="backward movement">Backwards</div>
     <div class="player1 player invisible">
         <div class="cross1 cross_horizontal"></div>
         <div class="cross2 cross_horizontal"></div>
@@ -82,13 +80,29 @@
         <div class="cross3 cross_vertical"></div>
         <div class="cross4 cross_vertical"></div>
     </div>
+    <div class = 'dead-screen hide'>
+        <div class="dead-text">Game Over!</div>
+        <button class="dead-button">Restart?</button>
 
+    </div>
     <div>
         <button data-model="tree">Tree</button>
+        <button data-model="plant">Plant</button>
         <button data-model="spawner">Spawner</button>
+        <button data-model="healthpot">Health Potion</button>
         <button id="start-btn">Start!</button>
 
-        <p id="hp" style="float: right; padding-right: 3px;">0</p>
+        <div class = "survival-container">
+            <div class="health-container survival-ui">
+                <img src="/public/assets/survival/hp.png" alt="Health Icon">
+                <p id="hp" style="float: right; padding-right: 5px;">20</p>
+            
+            </div>
+            <div class="ghost-counter survival-ui">
+                <img src="/public/assets/survival/ghost.png" alt="Ghost Killed Icon">
+                <p id="ghostkilled">0</p>
+            </div>
+        </div>
     </div>
     <script type="module" src="/public/js/survival/main.js"></script>
     <script src="/public/js/clientSocket.js"></script>

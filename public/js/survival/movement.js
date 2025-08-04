@@ -1,14 +1,11 @@
 // Controls
 import { camera, clock } from "./main.js";
-const forwardButton = document.querySelector('.forward');
-const backwardButton = document.querySelector('.backward');
-const forwardBound = forwardButton.getBoundingClientRect();
-const backwardBound = backwardButton.getBoundingClientRect();
+
 const keysPressed = {
-    w: false,
-    a: false,
-    s: false,
-    d: false,
+    1: { w: false, a: false, s: false, d: false },
+    2: { w: false, a: false, s: false, d: false },
+    3: { w: false, a: false, s: false, d: false },
+    4: { w: false, a: false, s: false, d: false }
 };
 
 
@@ -32,27 +29,40 @@ export function handleMovement(camera, clock){
     // Takes in camera and clock object and handles movement
     const delta = clock.getElapsedTime();
     const angle = camera.rotation.y;
+    const keysPressedValues = Object.values(keysPressed);
 
+    // Check if any keys are pressed
+    const anyKeyPressedEach = keysPressedValues.reduce((acc, curr) => {
+        for (const key in acc) {
+            acc[key] = curr[key] || acc[key];
+        }
+        return acc;
+    }, {
+        w: false,
+        a: false,
+        s: false,
+        d: false
+    });
 
     // Forward / backward
-    if (keysPressed.w || keysPressed.s) {
+    if (anyKeyPressedEach.w || anyKeyPressedEach.s) {
         camera.position.y = 0.12 + Math.sin(delta * 30) * 0.01; // bobbing
     } else {
         camera.position.y = 0.12; // reset when not moving forward/backward
     }   
-    if (keysPressed.w) {
+    if (anyKeyPressedEach.w) {
         camera.position.x -= Math.sin(angle) * walkSpeed;
         camera.position.z -= Math.cos(angle) * walkSpeed;
         camera.position.y = 0.12 + Math.sin(delta * 26) * 0.01; 
     }
-    if (keysPressed.s) {
+    if (anyKeyPressedEach.s) {
         camera.position.x += Math.sin(angle) * walkSpeed;
         camera.position.z += Math.cos(angle) * walkSpeed;
     }
 
     // Left / right rotation (in place)
-    if (keysPressed.a) camera.rotation.y += turnSpeed;
-    if (keysPressed.d) camera.rotation.y -= turnSpeed;   
+    if (anyKeyPressedEach.a) camera.rotation.y += turnSpeed;
+    if (anyKeyPressedEach.d) camera.rotation.y -= turnSpeed;   
 }
 
 
@@ -60,35 +70,32 @@ export function handleMovement(camera, clock){
 
 
 function updatePlayerPosition(playerNo, x, y) {
-    const xPixel = x / 100 * window.innerWidth;
-    const yPixel = y / 100 * window.innerHeight;
-    if (forwardBound.left <= xPixel && xPixel <= forwardBound.right &&
-        forwardBound.top <= yPixel && yPixel <= forwardBound.bottom) {
-        keysPressed.w = true;
+
+    if (y < 5) {
+        keysPressed[playerNo].w = true;
     }
     else{
-        keysPressed.w = false;
+        keysPressed[playerNo].w = false;
     }
-    if (backwardBound.left <= xPixel && xPixel <= backwardBound.right &&
-        backwardBound.top <= yPixel && yPixel <= backwardBound.bottom) {
-        keysPressed.s = true;
+    if (y >95 ) {
+        keysPressed[playerNo].s = true;
     }
     else{
-        keysPressed.s = false;
+        keysPressed[playerNo].s = false;
     }
 
     if (x < 5) {
-        keysPressed.a = true;
+        keysPressed[playerNo].a = true;
     }
     else {
-        keysPressed.a = false;
+        keysPressed[playerNo].a = false;
     }
 
     if (x > 95) {
-        keysPressed.d = true;
+        keysPressed[playerNo].d = true;
     }
     else {
-        keysPressed.d = false;
+        keysPressed[playerNo].d = false;
     }
 }
 

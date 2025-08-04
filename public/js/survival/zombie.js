@@ -1,16 +1,20 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { scene, camera } from './main.js';
+import { updatehealth } from "./combat.js";
 
 const GLTFloader = new GLTFLoader();
+
+
+// Spawners logic
 const spawners = [];
-function getSpawnersLoc() {
+
+export function getSpawnersLoc() {
   const taggedMeshes = [];
   scene.traverse((object) => {
     if (object.userData.tag === "spawner") {
       // Only add if not already in spawners array
       if (!spawners.find(spawner => spawner.uuid === object.uuid)) {
         spawners.push(object);
-        addClickableObject(object); // Add to clickable objects
       }
       taggedMeshes.push(object.position.clone());
     }
@@ -18,20 +22,28 @@ function getSpawnersLoc() {
   return taggedMeshes;
 }
 
-const selectedModel = "ghost";
-const zombies = []; // Store zombies
+
+// Loading monster and monster logic
+//const selectedModel = "ghost";
+export const zombies = []; // Store zombies
 const modelCache = {};  // Store loaded base models
 
-function loadZombie(point) {
+
+const modelScales = {
+    ghost: 0.02,
+    grim_reaper: 0.002
+}
+
+function loadZombie(point, selectedModel) {
     if (modelCache[selectedModel]) {
         const clone = modelCache[selectedModel].clone(true);
-        clone.scale.setScalar(0.02);
+        clone.scale.setScalar(modelScales[selectedModel]);
         clone.position.copy(point);
         clone.userData.tag = selectedModel;
         clone.userData.swaySeed = Math.random() * 100000;
         zombies.push(clone);
         scene.add(clone);
-        addClickableObject(clone); // Add this line
+        addClickableObject(clone);
         
     } else {
         GLTFloader.load(`/public/assets/survival/${selectedModel}.glb`, function (gltf) {
@@ -39,29 +51,36 @@ function loadZombie(point) {
             modelCache[selectedModel] = baseModel;
 
             const clone = baseModel.clone(true);
-            clone.scale.setScalar(0.02);
+            clone.scale.setScalar(modelScales[selectedModel]);
             clone.position.copy(point);
             clone.userData.tag = selectedModel;
             clone.userData.swaySeed = Math.random() * 10000;
             zombies.push(clone);
             scene.add(clone);
-            addClickableObject(clone); // Add this line
+            addClickableObject(clone);
         });
     }
 }
 
-export function spawnZombies(){
+
+export function spawnZombies(type){
     const arr = getSpawnersLoc();
+    if (type === "grim_reaper"){
+        const randomSpawnerPoint = arr[Math.floor(Math.random() * arr.length)];
+        loadZombie(randomSpawnerPoint, type);
+
+    }else{
     arr.forEach(point => {
         console.log("zombie spawned")
-        loadZombie(point);
+        loadZombie(point, type);
     });
+    }
 }
 
 let intervalId = null; 
 export function spawnZombiesInterval(interval){
     intervalId = setInterval(() => {
-        spawnZombies();
+        spawnZombies("ghost");
     }, interval);
 
 }
@@ -70,7 +89,6 @@ export function stopSpawnZombies(){
     clearInterval(intervalId);
     intervalId = null; 
 }
-
 
 function followCamera(follower, followSpeed = 0.004) {
     const cameraPosition = camera.position.clone();
@@ -85,6 +103,21 @@ function followCamera(follower, followSpeed = 0.004) {
     direction.normalize();
 
     const distance = follower.position.distanceTo(camera.position);
+
+    // Follower is Boss
+    if (follower.userData.tag === "boss"){
+        if (distance > 0.2) {
+            follower.position.add(direction.multiplyScalar(followSpeed));
+        } else {
+            const arr = getSpawnersLoc();
+            const randomSpawnerPoint = arr[Math.floor(Math.random() * arr.length)];
+            follower.position.copy(randomSpawnerPoint);
+            // Fix the hit counter increment
+            updatehealth(-3)
+        }
+        return;
+    }
+    // Follower is normal monster
     if (distance > 0.2) {
         follower.position.add(direction.multiplyScalar(followSpeed));
     } else {
@@ -95,9 +128,7 @@ function followCamera(follower, followSpeed = 0.004) {
         removeClickableObject(follower); // Add this line
         
         // Fix the hit counter increment
-        const hitCounter = document.getElementById("hp");
-        let currentValue = parseInt(hitCounter.textContent) || 0;
-        hitCounter.textContent = currentValue + 1;
+        updatehealth(-1)
     }
 }
 
@@ -109,18 +140,20 @@ export function updateZombies() {
             followCamera(zombie);
         }
     });
+    if (boss){
+        followCamera(boss, 0.02);
+    }
 }
 
-export const clickableObjects = []; // Add this export
+// Clickable objects to allow shooting
+export const clickableObjects = []; 
 
-// Add this helper function
 function addClickableObject(object) {
     if (!clickableObjects.includes(object)) {
         clickableObjects.push(object);
     }
 }
 
-// Add this helper function  
 export function removeClickableObject(object) {
     console.log('Removing object with UUID:', object.uuid);
     console.log('Objects before removal:', clickableObjects.length);
@@ -134,4 +167,45 @@ export function removeClickableObject(object) {
     } else {
         console.log('Object not found in clickableObjects array');
     }
+}
+
+
+// Boss monster logic (kill 20 ghosts, stop spawning ghosts, need to hit it 10 times to kill)
+export let boss;
+export function spawnBossZombie() {
+    const counter = document.getElementById("ghostkilled");
+
+    if (!counter) return; // safety check
+    const kills = parseInt(counter.textContent);
+
+    if (kills >= 10 && !window.bossSpawned) {
+        window.bossSpawned = true;
+        console.log("Boss spawning");
+        stopSpawnZombies(); 
+
+        // Spawn the boss zombie
+        //spawnZombies("grim_reaper");
+        const arr = getSpawnersLoc()
+        const randomSpawnerPoint = arr[Math.floor(Math.random() * arr.length)];
+        loadBoss(randomSpawnerPoint, "grim_reaper");
+    }
+}
+
+
+function loadBoss(point, selectedModel){
+    GLTFloader.load(`/public/assets/survival/${selectedModel}.glb`, function (gltf) {
+        const baseModel = gltf.scene;
+        boss = baseModel.clone(true);
+        boss.scale.setScalar(modelScales[selectedModel]);
+        boss.position.copy(point);
+        boss.userData.tag = "boss";
+        boss.userData.swaySeed = Math.random() * 10000;
+        boss.userData.hp = 10;
+        scene.add(boss);
+    });
+}
+
+export function killBoss(){
+    scene.remove(boss);
+    boss = null;
 }

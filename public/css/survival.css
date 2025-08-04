@@ -14,6 +14,9 @@ canvas {
     display: block;
     width: 100vw;
     height: 100vh;
+    position:fixed;
+    top: 0;
+    left: 0;
 }
 
 .movement {
@@ -41,4 +44,94 @@ canvas {
     border-bottom:none;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+}
+
+.survival-container{
+    position:fixed;
+    z-index: 1000;
+    top: 2rem;
+    right: 2rem;
+    color:white;
+    display:flex;
+    flex-direction: column;
+    gap:1rem;
+}
+
+.survival-ui p {
+    margin: 0;
+}
+.survival-ui {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 2rem;
+    gap:1rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.survival-ui img {
+    width: 48px;
+    height: 48px;
+}
+
+
+.health-container {
+    background-color: #d6161680;
+    border: 2px solid #d61616;
+    border-radius: 1rem;
+}
+
+.ghost-counter {
+    background-color: #e3e3ff80;
+    border: 2px solid #e3e3ff;
+    border-radius: 1rem;
+}
+
+.dead-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(128, 9, 9, 0.185);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    z-index: 10000;
+    font-weight: bold;
+        animation: death-fade 0.5s ease-in-out forwards;
+
+}
+
+.dead-button {
+    background-color: #d6161675;
+    border: 2px solid #d61616;
+    color: white;
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 1rem;
+    cursor: pointer;
+
+}
+
+.dead-button:hover {
+    filter: brightness(1.2);
+}
+
+@keyframes death-fade {
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(5px);
+    }
+    
 }

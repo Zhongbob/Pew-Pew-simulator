@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { launchEditorMode, stopEditorMode } from './terrainEditor/editorSetup.js';
 import { setUpEventListeners, handleMovement } from './movement.js';
-import { spawnZombies, stopSpawnZombies, spawnZombiesInterval, updateZombies } from './zombie.js';
-import { displayClickables, shootclick, checkWin } from './combat.js';
+import { spawnZombies, stopSpawnZombies, spawnZombiesInterval, updateZombies, spawnBossZombie } from './zombie.js';
+import { shootclick, checkDie } from './combat.js';
 import { initWorld } from './world.js';
+import { checkHealthPotionCollisions } from './health.js';
 
 export let scene, camera, renderer, plane, axes, controls, clock;
 
@@ -17,6 +18,7 @@ function setup() {
     scene.background = new THREE.Color(0x00000F);  // blue background
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
+    renderer.domElement.classList.add("game-canvas");
     renderer.domElement.style.display = "block";
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
@@ -57,7 +59,9 @@ function setup() {
     controls.target.set(0, 0, 0); // Look at the center
     controls.update();
     editorMode = false;
-    gameSetup()
+    console.log("Game started, editorMode is now", editorMode);
+    // Game setup starts here
+    gameSetup();
     shootclick();
 }
 
@@ -67,8 +71,9 @@ function animate() {
         // Game logic and movement starts here
         handleMovement(camera, clock)
         updateZombies();
-        //displayClickables();
-        checkWin();
+        spawnBossZombie();
+        checkHealthPotionCollisions();
+        checkDie();
     }
 
 
@@ -79,7 +84,6 @@ function animate() {
 
 function gameSetup(){
     // Remove window listener for edits
-    console.log("Game setup started");
     stopEditorMode();
     // Remove edit UI elements
     scene.remove(axes);

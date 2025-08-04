@@ -106,6 +106,7 @@ ws.onmessage = (event) => {
         setTimeout(() => {
             currentCrossHair.classList.remove("blink-once");
         }, 500);
+        console.log(stillCalibrating)
         if (stillCalibrating.has(playerNo)) {
             positiveFeedback2()
             return;

@@ -19,7 +19,9 @@ document.querySelectorAll('button[data-model]').forEach(btn => {
 // Putting models in
 const modelScales = {
     tree: 0.1,
-    spawner: 0.2
+    spawner: 0.2,
+    plant: 0.15,
+    healthpot: 0.007,
 };
 
 const modelCache = {};  // Store loaded base models
