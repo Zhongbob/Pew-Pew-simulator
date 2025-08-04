@@ -6,14 +6,12 @@ const fire = document.getElementById("fire");
 const resetBtn = document.getElementById("resetBtn");
 const safetyBtn = document.getElementById("safetyBtn");
 const roundsLeft = document.getElementById("roundsLeft");
-
 const barrelCover = document.getElementById('barrelCover');
-const distValue = document.getElementById('distValue');
-
+// const distValue = document.getElementById('distValue');
+const lastRoundCatch = document.getElementById('lastRoundCatch');
 
 //Functions
 let roundsCount = 30;
-
 function updateRounds() {
   if (roundsCount > 0) {
     roundsCount--;
@@ -45,15 +43,36 @@ function setupSliderSpeed(sliderID, speedID) {
   });
 }
 
-// Reset trigger to right on release
+let lastCatch = false;                            
+lastRoundCatch.addEventListener('click', () => {
+  lastCatch = !lastCatch; // flip the boolean
+  lastRoundCatch.textContent = `lastCatch: ${lastCatch.toString().toUpperCase()}`;
+  lastRoundCatch.style.backgroundColor = lastCatch ? 'green' : 'red';
+  if (lastCatch && handle.value === handle.min){
+    handle.disabled = true;
+  }
+  else{
+    handle.disabled = false;
+  }
+});
+
 function resetSlider(slider) {
-  slider.value = slider.max;
+  // Optional lock if it's handle at min and not caught before
+  if (slider.id === 'handle' && lastCatch && slider.value === slider.min) {
+    slider.value = slider.min; // keep it locked here
+    handle.disabled = true;
+    return; // stop here if we're locking at min
+  }
+  else{
+    slider.value = slider.max;
+  }
 }
+
 
 function updateBoltPosition() {
   const dist = parseInt(handle.value);
   barrelCover.style.left = `${dist}px`;
-  distValue.textContent = `${dist}px`;
+  // distValue.textContent = `${dist}px`;
 }
 
 //Fullscreen
@@ -85,24 +104,15 @@ function toggleFullscreen() {
   }
 }
 
-
 // Safety button
 let safetyOn = true;
 let handleUnlocked = false;
 
 safetyBtn.addEventListener("click", () => {
-  if (safetyOn === true) {
-    safetyBtn.textContent = "Safety Off";
-    safetyOn = false;
-    if (handleUnlocked === true){
-      trigger.disabled = false;
-    }
-  } 
-  else {
-    safetyBtn.textContent = "Safety On";
-    safetyOn = true;
-    trigger.disabled = true;
-  }
+  safetyOn = !safetyOn; // flip the state
+  safetyBtn.textContent = safetyOn ? "Safety On" : "Safety Off";
+  safetyBtn.style.backgroundColor = safetyOn ? 'green' : 'red';
+  trigger.disabled = safetyOn || !handleUnlocked;
 });
 
 // Initially disable trigger
@@ -128,7 +138,6 @@ trigger.addEventListener("input", () => {
         roundsLeft.textContent = `Rounds Left: 0 (Disabled)`;
   }
   else if (!safetyOn && parseInt(trigger.value) === parseInt(trigger.min)) {
-    shoot();
     fire.style.display = "block";
     if (!hasFired) {
       fireCount++;
@@ -149,7 +158,6 @@ trigger.addEventListener("input", () => {
 
 //Load New Magazine aka Reset button
 resetBtn.addEventListener("click", () => {
-  reload()
   roundsCount = 30;
   fireCount = 0;
   // counterDisplay.textContent = `Fires: 0`;

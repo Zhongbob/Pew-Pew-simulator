@@ -1,14 +1,16 @@
 const path = window.location.pathname; 
 const pathSegments = path.split('/');
 const room_id = pathSegments[3]
+let motionCaptureStarted = false;
 const rotations = {
     x: 0,
     y: 0,
     z: 0
 }
 
-const loadButton = document.getElementById("resetBtn");
-loadButton.onclick = (e) => {
+document.body.onclick = (e) => {
+    if (motionCaptureStarted) return;
+    motionCaptureStarted = true;
     e.preventDefault();
     try {
         if (
@@ -32,7 +34,7 @@ const handleOrientationEvent = (event) => {
     rotations.z = event.gamma.toFixed(2);
     if (Number(rotations.z) > 0) {
         rotations.x = 180 + Number(rotations.x);
-        rotations.y = 180 - Number(rotations.y);
+        rotations.y = 180 + Number(rotations.y);
     }
 
 }
@@ -81,7 +83,10 @@ fireButton.onclick = (e) => {
 }
 function shoot(){
     const {x, y} = rotations;
-
+    if (!motionCaptureStarted) {
+        alert("Please allow motion capture first by clicking on the screen.");
+        return;
+    }
     if (!startShooting) {
         sendData(JSON.stringify({
             type: "calibration",
