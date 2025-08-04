@@ -1,0 +1,156 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 30px;
+}
+
+/*Handle*/
+input#handle[type=range] {
+  width: 300px;
+  height: 30px;
+  background: transparent; /* Remove default background */
+  -webkit-appearance: none;
+  pointer-events: none;
+}
+input#handle[type=range]::-webkit-slider-runnable-track {
+  height: 40px; /* height of track */
+  background: #ccc;
+  border-radius: 6px; /* round edges */
+  pointer-events: none;
+}
+input#handle[type=range]::-webkit-slider-thumb {
+  width: 40px;  /* width of thumb */
+  height: 40px; /* height of thumb */
+  background: red;
+  border-radius: 6px; /* makes it circular */
+  cursor: pointer;
+  margin-top: 0px; /* centers the thumb on the track */
+  -webkit-appearance: none;
+  position: relative;
+  pointer-events: auto;
+}
+
+/*Trigger*/
+input#trigger[type=range] {
+  width: 150px;
+  background: transparent; /* Remove default background */
+  -webkit-appearance: none;
+  pointer-events: none;
+}
+input#trigger[type=range]::-webkit-slider-runnable-track {
+  height: 90px; /* height of track */
+  background: #ccc;
+  border-radius: 6px; /* round edges */
+  pointer-events: none;
+}
+input#trigger[type=range]::-webkit-slider-thumb {
+  width: 90px;  /* width of thumb */
+  height: 90px; /* height of thumb */
+  background: red;
+  border-radius: 6px; /* makes it circular */
+  cursor: pointer;
+  margin-top: 0px; /* centers the thumb on the track */
+  -webkit-appearance: none;
+  position: relative;
+  pointer-events: auto;
+}
+
+
+/*Bolt*/
+#bolt {
+  position: absolute;
+  width: 300px;
+  height: 50px;
+  top: 10px;
+  left: 450px;
+  border: 2px solid #444;
+  background: grey;
+  overflow: hidden;
+}
+
+#barrelCover {
+  position: absolute;
+  width: 500px;
+  height: 50px;
+  background: black;
+  overflow: hidden;
+}
+
+#fire {
+  font-size: 48px;
+  margin-top: 20px;
+  display: none;
+  position: absolute;
+  top: 200px;
+  left: 600px;
+
+}
+
+/*Positions*/
+#handle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+#trigger {
+  position: absolute;
+  top: 200px;
+  left: 330px;
+}
+#resetBtn{
+  position: absolute;
+  top: 200px;
+  left: 200px;
+  width: 90px;
+  height: 90px;
+}
+#lastRoundCatch{
+  position: absolute;
+  top: 200px;
+  left: 100px;
+  width: 90px;
+  height: 90px;
+  color: white;
+  background-color: red;
+}
+#safetyBtn{
+  position: absolute;
+  top: 200px;
+  left: 500px;
+  width: 90px;
+  height: 90px;
+  color: white;
+  background-color: green;
+  white-space: nowrap;
+}
+#fullscreenBtn{
+  position: absolute;
+  top: 340px;
+  left: 600px;
+  white-space: nowrap;
+}
+#speed{
+  font-weight: bold;
+  position: absolute;
+  top: 320px;
+  left: 400px;
+  white-space: nowrap;
+}
+#speedHandle{
+  font-weight: bold;
+  position: absolute;
+  top: 320px;
+  left: 600px;
+  white-space: nowrap;
+}
+#counter{
+  position: absolute;
+  top: 10px;
+  left: 600px;
+  white-space: nowrap;
+}
+#roundsLeft{
+  position: absolute;
+  top: 340px;
+  left: 400px;
+  white-space: nowrap;
+}
