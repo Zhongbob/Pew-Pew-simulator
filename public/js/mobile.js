@@ -61,7 +61,6 @@ ws.onmessage = (event) => {
         currentCalibration = data.position;
     }
     if (data.type === "calibration_complete") {
-        alert("Calibration complete");
         startShooting = true;
         window.addEventListener("deviceorientation", handleOrientationEvent2, false);
     }

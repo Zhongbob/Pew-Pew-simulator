@@ -78,8 +78,9 @@ export function shoot(x, y) {
     mouse.x = (x / window.innerWidth) * 2 - 1;
     mouse.y = -(y / window.innerHeight) * 2 + 1;
 
-    // Create visual click indicator
-    createClickDot(x, y);
+    const sound = new Audio('/public/sounds/gunshot.mp3');
+    sound.volume = 0.5; // Set volume to 50%
+    sound.play();
 
     raycaster.setFromCamera(mouse, camera);
 

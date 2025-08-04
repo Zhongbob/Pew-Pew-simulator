@@ -12,8 +12,8 @@ const lastRoundCatch = document.getElementById('lastRoundCatch');
 const jamFixBtn = document.getElementById("jamFixBtn");
 const accYDisplay = document.getElementById("accY"); // Motion debug display
 
-const guncock = new Audio('gun_cock.mp3');
-const ia = new Audio('empty_gun.mp3');
+const guncock = new Audio('/public/sounds/gun_cock.mp3');
+const ia = new Audio('/public/sounds/empty_gun.mp3');
 //Functions
 function guncockSound() {
   guncock.currentTime = 0; // rewind to start if needed
@@ -27,7 +27,10 @@ function iaSound() {
 let roundsCount = 30;
 function updateRounds() {
   if (roundsCount > 0) {
-    roundsCount--;
+    if (startShooting){
+      roundsCount--;
+    }
+    
     roundsLeft.textContent = `Rounds Left: ${roundsCount}`;
   } 
   else {
@@ -112,7 +115,7 @@ function handleMotion(event) {
   const y = acc.y.toFixed(2);
   accYDisplay.textContent = y; // Display live value
 
-  if (isJammed && acc.y > 15) {
+  if (isJammed && acc.y > 5) {
     clearJam();
   }
 }
@@ -189,7 +192,7 @@ trigger.addEventListener("input", () => {
     fire.style.display = "block";
     shoot()
     if (!hasFired) {
-      if (Math.random() < 0.1) {
+      if (startShooting && Math.random() < 0.03) {
         iaSound();
         if (Math.random() < 0.5){
             isJammed = true;
