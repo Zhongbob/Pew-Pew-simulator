@@ -41,7 +41,7 @@ async def get(request: Request, room_id:int):
         room = rooms[room_id]
         if room.game_type == "survival":
             return templates.TemplateResponse("survival.html", {"request": request, "room_id": room_id})
-        return templates.TemplateResponse("freeplay.html", {"request": request})
+        return templates.TemplateResponse("freeplay.html", {"request": request, "room_id": room_id})
     else:
         return RedirectResponse(url='/lobby?error=Room does not exist')
 

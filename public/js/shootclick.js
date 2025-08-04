@@ -56,7 +56,7 @@ function checkHit(x, y, playerId) {
       y <= rect.bottom
     ) {
       console.log("Target hit.");
-      recordShotHit();
+      recordShotHit(playerId);
       if (playerId) {
         hit(playerId);
       }
@@ -80,6 +80,10 @@ function shoot(x, y, playerId){
       return
     }
   }
+  if (checkHitElement(toggleButton, xPixels, yPixels)) {
+    toggleButton.click();
+    return;
+  }
 
   placeShotAt(xPixels, yPixels);
   placeSmokeAt(xPixels, yPixels);
@@ -90,9 +94,8 @@ function shoot(x, y, playerId){
     newGunshot.remove();
   }
   checkHit(xPixels, yPixels,playerId);
-  
+  recordShot(playerId);
   updateAccuracy();
-  recordShot();
 }
 
 window.globalShoot = shoot;
