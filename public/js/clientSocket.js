@@ -5,6 +5,7 @@ const ws = new WebSocket(`wss://${location.host}/computer/${room_id}/ws`);
 const playerCrosshairElements = document.querySelectorAll(".player");
 const playerInfos = document.querySelectorAll(".player-info");
 const loadingScreen = document.querySelector(".waiting");
+let started = false;
 const playerIds = {
 
 }
@@ -45,7 +46,7 @@ function startAnimation() {
     loadingScreen.dataset.state = "ready";
     setTimeout(() => {
         loadingScreen.classList.add("hide");
-        slideInElements();
+        window.globalStartLevel();
     }, 3000)
 }
 const positiveAudio = new Audio("/public/sounds/ding1.mp3");
@@ -81,6 +82,9 @@ ws.onmessage = (event) => {
             currentCrossHair.style.left = `${x}vw`;
             currentCrossHair.style.top = `${y}vh`;
         }
+        if (window.updatePlayerPosition) {
+            window.updatePlayerPosition(playerNo, x, y);
+        }
     } else if (data.type === "request_calibration") {
         currentCalibrations[playerNo] = data.position;
         currentCrossHair.style.left = `${positions[data.position]}vw`;
@@ -106,7 +110,7 @@ ws.onmessage = (event) => {
             positiveFeedback2()
             return;
         }
-        shoot(currentPosition[playerNo].x, currentPosition[playerNo].y, playerNo);
+        window.globalShoot(currentPosition[playerNo].x, currentPosition[playerNo].y, playerNo);
         setBulletCount(playerNo, data.bullets[0], data.bullets[1]);
     }
     else if (data.type === "new_player") {

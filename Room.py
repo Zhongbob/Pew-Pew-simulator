@@ -10,7 +10,7 @@ next_calibration = {
     "right": None
 }
 class Room:
-    def __init__(self, room_id : int):
+    def __init__(self, room_id : int, game_type: str = "freeplay"):
         self.room_id = room_id
         self.computer_client: ComputerClient = None
         self.mobile_clients: dict[int, MobileClient] = {}
@@ -29,6 +29,7 @@ class Room:
         self.current_calibration_position = {
 
         }
+        self.game_type = game_type  # "freeplay" or "survival" 
 
     async def set_computer_client(self, websocket):
         uuid = str(uuid4())
