@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Survival Mode</title>
+    <link rel="stylesheet" href="/public/css/survival.css">
+    <link rel="stylesheet" href="/public/css/shooter.css">
+    <script type="importmap">
+        {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/"
+            }
+        }
+        </script>
+</head>
+
+<body>
+    <div class="waiting" style="flex-direction: column;" data-state="waiting">
+        <h1 class="text-1 blink">Waiting for players to join...</h1>
+        <h1 class="text-2">Calibrate by aiming at the crosshair</h1>
+        <h1 class="text-3">Calibration Complete! Get ready!</h1>
+    </div>
+    <div class="HUD">
+        <div class="player1-info player-info invisible">
+            <div class="gun-display">
+                <img src="/public/assets/gun.png">
+            </div>
+            <div class="bullet-count"><b class="count">30</b> <span class="subtext">/ <span
+                        class="total-count">INF</span></span></div>
+            <p class="player-no">Player 1</p>
+        </div>
+        <div class="player2-info player-info invisible">
+            <div class="gun-display">
+                <img src="/public/assets/gun.png">
+            </div>
+            <div class="bullet-count"><b class="count">30</b> <span class="subtext">/ <span
+                        class="total-count">INF</span></span></div>
+            <p class="player-no">Player 2</p>
+        </div>
+        <div class="player3-info player-info invisible">
+            <div class="gun-display">
+                <img src="/public/assets/gun.png">
+            </div>
+            <div class="bullet-count"><b class="count">30</b> <span class="subtext">/ <span
+                        class="total-count">INF</span></span></div>
+            <p class="player-no">Player 3</p>
+        </div>
+        <div class="player4-info player-info invisible">
+            <div class="gun-display">
+                <img src="/public/assets/gun.png">
+            </div>
+            <div class="bullet-count"><b class="count">30</b> <span class="subtext">/ <span
+                        class="total-count">INF</span></span></div>
+            <p class="player-no">Player 4</p>
+        </div>
+    </div>
+    <div class="player1 player invisible">
+        <div class="cross1 cross_horizontal"></div>
+        <div class="cross2 cross_horizontal"></div>
+        <div class="cross3 cross_vertical"></div>
+        <div class="cross4 cross_vertical"></div>
+    </div>
+    <div class="player2 player invisible">
+        <div class="cross1 cross_horizontal"></div>
+        <div class="cross2 cross_horizontal"></div>
+        <div class="cross3 cross_vertical"></div>
+        <div class="cross4 cross_vertical"></div>
+    </div>
+    <div class="player3 player invisible">
+        <div class="cross1 cross_horizontal"></div>
+        <div class="cross2 cross_horizontal"></div>
+        <div class="cross3 cross_vertical"></div>
+        <div class="cross4 cross_vertical"></div>
+    </div>
+    <div class="player4 player invisible">
+        <div class="cross1 cross_horizontal"></div>
+        <div class="cross2 cross_horizontal"></div>
+        <div class="cross3 cross_vertical"></div>
+        <div class="cross4 cross_vertical"></div>
+    </div>
+    <div class = 'dead-screen hide'>
+        <div class="dead-text">Game Over!</div>
+        <button class="dead-button">Restart?</button>
+
+    </div>
+    <div>
+        <button data-model="tree">Tree</button>
+        <button data-model="plant">Plant</button>
+        <button data-model="spawner">Spawner</button>
+        <button data-model="healthpot">Health Potion</button>
+        <button id="start-btn">Start!</button>
+
+        <div class = "survival-container">
+            <div class="health-container survival-ui">
+                <img src="/public/assets/survival/hp.png" alt="Health Icon">
+                <p id="hp" style="float: right; padding-right: 5px;">20</p>
+            
+            </div>
+            <div class="ghost-counter survival-ui">
+                <img src="/public/assets/survival/ghost.png" alt="Ghost Killed Icon">
+                <p id="ghostkilled">0</p>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/public/js/survival/main.js"></script>
+    <script src="/public/js/clientSocket.js"></script>
+</body>
+
+</html>

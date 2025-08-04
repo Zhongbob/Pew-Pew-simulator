@@ -4,7 +4,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-
 import uvicorn
 from Room import Room
 app = FastAPI()
@@ -23,7 +22,10 @@ async def get(request: Request):
 @app.get("/room/computer/{room_id}", response_class=HTMLResponse)
 async def get(request: Request, room_id:int):    
     if room_id in rooms:        
-        return templates.TemplateResponse("computer.html", {"request": request})
+        room = rooms[room_id]
+        if room.game_type == "survival":
+            return templates.TemplateResponse("survival.html", {"request": request, "room_id": room_id})
+        return templates.TemplateResponse("index.html", {"request": request})
     else:
         return RedirectResponse(url='/create_room')
 
