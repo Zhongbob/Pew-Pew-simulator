@@ -16,6 +16,16 @@ body {
     color: #ED3636;
     --color: #ED3636;
 }
+
+.player3 {
+    color: #36ED36;
+    --color: #36ED36;
+}
+
+.player4 {
+    color: #dbed36;
+    --color: #dbed36;
+}
 .cross_horizontal {
     position:absolute;
     width: 12px;
