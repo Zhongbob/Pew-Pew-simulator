@@ -125,6 +125,7 @@ input#trigger[type=range]::-webkit-slider-thumb {
   left: 200px;
   width: 90px;
   height: 90px;
+  white-space: wrap;
 }
 #lastRoundCatch{
   position: absolute;

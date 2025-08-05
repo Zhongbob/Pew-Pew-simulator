@@ -158,7 +158,10 @@ safetyBtn.addEventListener("click", () => {
   safetyOn = !safetyOn; // flip the state
   safetyBtn.textContent = safetyOn ? "Safety On" : "Safety Off";
   safetyBtn.style.backgroundColor = safetyOn ? 'green' : 'red';
-  trigger.disabled = safetyOn || !handleUnlocked;
+  trigger.disabled = safetyOn ;
+  if (safetyOn) {
+    trigger.value = trigger.max
+  }
 });
 
 // Initially disable trigger
@@ -167,6 +170,7 @@ handle.addEventListener("input", () => {
     if (handle.value === handle.min){
         guncockSound();
     }
+
     if ((!handleUnlocked && parseInt(handle.value) === parseInt(handle.min)) && !safetyOn) {
         //If handle is pulled back
         trigger.disabled = false;
