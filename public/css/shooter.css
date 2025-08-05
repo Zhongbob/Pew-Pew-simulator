@@ -126,7 +126,7 @@ body {
     padding: 1rem 3rem;
     z-index: 1000;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 10px;
 }
 .gun-display{
